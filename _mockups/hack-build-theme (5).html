@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hack.build — Build Things. Build Community.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Permanent+Marker&family=VT323&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ========== RESET & BASE ========== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --paper: #f5f0e6;
+      --paper-dark: #e8e0d0;
+      --ink: #1a1a1a;
+      --accent: #ff3366;
+      --accent-dark: #e02050;
+      --success: #2a9d2a;
+      --info: #2266cc;
+      --warning: #ff9900;
+      
+      --font-typewriter: 'Special Elite', monospace;
+      --font-marker: 'Permanent Marker', cursive;
+      --font-terminal: 'VT323', monospace;
+      --font-mono: 'Courier Prime', monospace;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      background: var(--ink);
+      font-family: var(--font-typewriter);
+      color: var(--ink);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Paper texture */
+    .paper-texture {
+      background-color: var(--paper);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    }
+    
+    /* ========== NAVIGATION ========== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--ink);
+      border-bottom: 3px solid var(--accent);
+      padding: 0 20px;
+    }
+    
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+    }
+    
+    .nav-logo {
+      font-family: var(--font-marker);
+      font-size: 24px;
+      color: var(--paper);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .nav-logo .dot {
+      color: var(--accent);
+    }
+    
+    .nav-logo i {
+      color: var(--accent);
+      font-size: 20px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      font-family: var(--font-terminal);
+      font-size: 16px;
+      color: var(--paper);
+      text-decoration: none;
+      padding: 8px 14px;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    
+    .nav-links a:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    
+    .nav-cta {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+    }
+    
+    .nav-cta:hover {
+      background: var(--accent-dark) !important;
+    }
+    
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--paper);
+      font-size: 24px;
+      cursor: pointer;
+    }
+    
+    /* ========== HERO SECTION ========== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 20px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      font-family: var(--font-terminal);
+      font-size: 14px;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 4px 12px;
+      margin-bottom: 20px;
+      transform: rotate(-2deg);
+    }
+    
+    .hero-title {
+      font-family: var(--font-marker);
+      font-size: clamp(48px, 10vw, 100px);
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    
+    .hero-title .hack {
+      color: var(--ink);
+      display: block;
+    }
+    
+    .hero-title .dot {
+      color: var(--accent);
+    }
+    
+    .hero-title .build {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 5px 20px;
+      display: inline-block;
+      transform: rotate(1deg);
+    }
+    
+    .hero-tagline {
+      font-size: clamp(16px, 3vw, 22px);
+      max-width: 600px;
+      margin: 30px auto;
+      line-height: 1.8;
+    }
+    
+    .hero-tagline em {
+      font-style: normal;
+      background: var(--accent);
+      color: var(--paper);
+      padding: 0 4px;
+    }
+    
+    .hero-cta {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+    
+    .btn {
+      font-family: var(--font-marker);
+      font-size: 18px;
+      padding: 14px 28px;
+      border: 3px solid var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--accent);
+      color: var(--paper);
+      border-color: var(--accent);
+      transform: rotate(-1deg);
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: rotate(0deg) scale(1.05);
+    }
+    
+    .btn-secondary {
+      background: var(--paper);
+      color: var(--ink);
+      transform: rotate(1deg);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--ink);
+      color: var(--paper);
+      transform: rotate(0deg) scale(1.05);
+    }
+    
+    /* Hero decorations */
+    .hero-doodle {
+      position: absolute;
+      font-size: 40px;
+      opacity: 0.15;
+      color: var(--ink);
+    }
+    
+    .hero-tape {
+      position: absolute;
+      background: rgba(255, 230, 150, 0.7);
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .tape-1 { width: 80px; height: 25px; top: 80px; left: 10%; transform: rotate(-15deg); }
+    .tape-2 { width: 60px; height: 20px; bottom: 100px; right: 8%; transform: rotate(12deg); }
+    .tape-3 { width: 70px; height: 22px; top: 40%; left: 5%; transform: rotate(-8deg); }
+    
+    /* ========== SECTION BASE ========== */
+    .section {
+      padding: 80px 20px;
+      position: relative;
+    }
+    
+    .section-dark {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .section-label {
+      font-family: var(--font-terminal);
+      font-size: 14px;
+      background: var(--accent);
+      color: var(--paper);
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    
+    .section-title {
+      font-family: var(--font-marker);
+      font-size: clamp(32px, 5vw, 48px);
+      border-bottom: 4px solid currentColor;
+      display: inline-block;
+      padding-bottom: 8px;
+      transform: rotate(-1deg);
+    }
+    
+    .section-subtitle {
+      font-size: 16px;
+      max-width: 600px;
+      margin: 20px auto 0;
+      opacity: 0.8;
+    }
+    
+    /* ========== FEATURES SECTION ========== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .feature-card {
+      background: rgba(255,255,255,0.4);
+      border: 3px solid var(--ink);
+      padding: 25px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    
+    .feature-card:nth-child(odd) { transform: rotate(-0.5deg); }
+    .feature-card:nth-child(even) { transform: rotate(0.5deg); }
+    
+    .feature-card:hover {
+      transform: rotate(0deg) translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 36px;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+    
+    .feature-title {
+      font-family: var(--font-marker);
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #444;
+    }
+    
+    .feature-tag {
+      position: absolute;
+      top: -10px;
+      right: 15px;
+      font-family: var(--font-terminal);
+      font-size: 11px;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3px 8px;
+      transform: rotate(3deg);
+    }
+    
+    /* ========== HIGHLIGHT BOX ========== */
+    .highlight-box {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 20px 25px;
+      margin: 40px 0;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      transform: rotate(0.3deg);
+    }
+    
+    .highlight-box-alt {
+      background: var(--accent);
+    }
+    
+    /* ========== QUOTE BOX ========== */
+    .quote-box {
+      border-left: 4px solid var(--accent);
+      padding: 20px 25px;
+      margin: 30px 0;
+      background: rgba(255,255,255,0.5);
+      font-style: italic;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    
+    .quote-source {
+      display: block;
+      margin-top: 12px;
+      font-style: normal;
+      font-size: 13px;
+      color: #666;
+      font-family: var(--font-terminal);
+    }
+    
+    /* ========== ABOUT / CONTENT SECTION ========== */
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
+    }
+    
+    .about-text p {
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+    
+    .about-text strong {
+      font-family: var(--font-mono);
+    }
+    
+    .about-visual {
+      position: relative;
+    }
+    
+    .about-box {
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      padding: 30px;
+      transform: rotate(2deg);
+      box-shadow: 8px 8px 0 var(--ink);
+    }
+    
+    .about-box-inner {
+      border: 2px dashed var(--ink);
+      padding: 25px;
+      text-align: center;
+    }
+    
+    .about-box .big-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+    
+    .about-box h3 {
+      font-family: var(--font-marker);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    /* ========== STATS SECTION ========== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin: 40px 0;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+      border: 2px dashed var(--paper);
+    }
+    
+    .stat-num {
+      font-family: var(--font-marker);
+      font-size: 48px;
+      color: var(--accent);
+      display: block;
+    }
+    
+    .stat-label {
+      font-family: var(--font-terminal);
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+    
+    /* ========== PROJECTS / CARDS SECTION ========== */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .project-card {
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .project-card:hover {
+      transform: translateY(-8px) rotate(-1deg);
+      box-shadow: 8px 8px 0 var(--accent);
+    }
+    
+    .project-image {
+      height: 180px;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      color: var(--paper);
+      border-bottom: 3px solid var(--ink);
+    }
+    
+    .project-content {
+      padding: 20px;
+    }
+    
+    .project-tag {
+      font-family: var(--font-terminal);
+      font-size: 11px;
+      background: var(--accent);
+      color: var(--paper);
+      padding: 3px 8px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    
+    .project-title {
+      font-family: var(--font-marker);
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    
+    .project-desc {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    
+    .project-link {
+      font-family: var(--font-terminal);
+      font-size: 14px;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .project-link:hover {
+      text-decoration: underline;
+    }
+    
+    /* ========== PRINCIPLES / LIST SECTION ========== */
+    .principles-list {
+      display: grid;
+      gap: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .principle {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-left: 4px solid var(--accent);
+    }
+    
+    .principle-num {
+      font-family: var(--font-marker);
+      font-size: 36px;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 50px;
+    }
+    
+    .principle-title {
+      font-family: var(--font-terminal);
+      font-size: 18px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+    
+    .principle-desc {
+      font-size: 14px;
+      opacity: 0.85;
+    }
+    
+    /* ========== CTA SECTION ========== */
+    .cta-section {
+      text-align: center;
+      padding: 100px 20px;
+      background: var(--accent);
+      color: var(--paper);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--ink) 0,
+        var(--ink) 20px,
+        var(--paper) 20px,
+        var(--paper) 40px
+      );
+    }
+    
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--ink) 0,
+        var(--ink) 20px,
+        var(--paper) 20px,
+        var(--paper) 40px
+      );
+    }
+    
+    .cta-title {
+      font-family: var(--font-marker);
+      font-size: clamp(36px, 6vw, 56px);
+      margin-bottom: 20px;
+    }
+    
+    .cta-text {
+      font-size: 18px;
+      max-width: 500px;
+      margin: 0 auto 30px;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-cta {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+    
+    .btn-cta:hover {
+      background: var(--paper);
+      color: var(--ink);
+    }
+    
+    .btn-cta-alt {
+      background: transparent;
+      color: var(--paper);
+      border-color: var(--paper);
+    }
+    
+    .btn-cta-alt:hover {
+      background: var(--paper);
+      color: var(--accent);
+    }
+    
+    /* ========== FOOTER ========== */
+    .footer {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 60px 20px 30px;
+      border-top: 4px solid var(--accent);
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    .footer-brand .footer-logo {
+      font-family: var(--font-marker);
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+    
+    .footer-brand .footer-logo .dot {
+      color: var(--accent);
+    }
+    
+    .footer-brand p {
+      font-size: 14px;
+      opacity: 0.8;
+      line-height: 1.7;
+    }
+    
+    .footer-col h4 {
+      font-family: var(--font-terminal);
+      font-size: 14px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+    
+    .footer-col ul {
+      list-style: none;
+    }
+    
+    .footer-col li {
+      margin-bottom: 8px;
+    }
+    
+    .footer-col a {
+      color: var(--paper);
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    
+    .footer-col a:hover {
+      opacity: 1;
+      color: var(--accent);
+    }
+    
+    .footer-social {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .footer-social a {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    
+    .footer-social a:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 40px auto 0;
+      padding-top: 20px;
+      border-top: 1px dashed rgba(255,255,255,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    
+    .footer-stamp {
+      font-family: var(--font-marker);
+      font-size: 11px;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 12px;
+      transform: rotate(-5deg);
+    }
+    
+    /* ========== UTILITY CLASSES ========== */
+    .text-accent { color: var(--accent); }
+    .text-center { text-align: center; }
+    .mt-20 { margin-top: 20px; }
+    .mt-40 { margin-top: 40px; }
+    .mb-20 { margin-bottom: 20px; }
+    .mb-40 { margin-bottom: 40px; }
+    
+    /* Corner marks */
+    .corner-mark {
+      position: absolute;
+      font-size: 24px;
+      opacity: 0.2;
+    }
+    
+    /* ========== MOBILE RESPONSIVE ========== */
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--ink);
+        flex-direction: column;
+        padding: 20px;
+        border-bottom: 3px solid var(--accent);
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .nav-toggle {
+        display: block;
+      }
+      
+      .about-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .about-visual {
+        order: -1;
+      }
+      
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .footer-brand {
+        grid-column: 1 / -1;
+      }
+      
+      .footer-bottom {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .hero {
+        padding: 80px 15px 40px;
+      }
+      
+      .section {
+        padding: 50px 15px;
+      }
+      
+      .stats-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .stat-item {
+        padding: 15px;
+      }
+      
+      .stat-num {
+        font-size: 36px;
+      }
+      
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .footer-social {
+        justify-content: center;
+      }
+      
+      .principle {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+    
+    /* ========== ANIMATIONS ========== */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-15deg); }
+      50% { transform: translateY(-10px) rotate(-15deg); }
+    }
+    
+    .tape-1 { animation: float 4s ease-in-out infinite; }
+    .tape-2 { animation: float 5s ease-in-out infinite 0.5s; }
+    .tape-3 { animation: float 6s ease-in-out infinite 1s; }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <i class="fa-solid fa-bolt"></i>
+        hack<span class="dot">.</span>build
+      </a>
+      <button class="nav-toggle" onclick="toggleNav()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#writing">Writing</a></li>
+        <li><a href="#contact" class="nav-cta">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero paper-texture">
+    <div class="hero-tape tape-1"></div>
+    <div class="hero-tape tape-2"></div>
+    <div class="hero-tape tape-3"></div>
+    
+    <div class="hero-doodle" style="top: 15%; left: 8%;">⚡</div>
+    <div class="hero-doodle" style="top: 25%; right: 12%;">✶</div>
+    <div class="hero-doodle" style="bottom: 20%; left: 15%;">☆</div>
+    <div class="hero-doodle" style="bottom: 30%; right: 10%;">⚙</div>
+    
+    <div class="hero-content">
+      <div class="hero-badge">HARDWARE · TOOLS · TUTORIALS · ZINES</div>
+      <h1 class="hero-title">
+        <span class="hack">hack<span class="dot">.</span></span>
+        <span class="build">build</span>
+      </h1>
+      <p class="hero-tagline">
+        Open source tools, hardware tutorials, and creative projects.<br>
+        <em>If it doesn't exist,</em> <em>I'll build it.</em>
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">
+          <i class="fa-solid fa-rocket"></i> See Projects
+        </a>
+        <a href="#about" class="btn btn-secondary">
+          <i class="fa-solid fa-user"></i> About Me
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ABOUT ========== -->
+  <section id="about" class="section paper-texture">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text">
+          <div class="section-label">WHO I AM</div>
+          <h2 class="section-title">Moheeb Zara</h2>
+          <p style="margin-top: 20px;">
+            Hardware hacker, new media artist, and dropout. I make things that blink, move, and occasionally require a fire extinguisher nearby.
+          </p>
+          <p>
+            I work at the intersection of embedded systems, creative coding, and projection mapping. I write tutorials, build tools, and host workshops because expensive proprietary stuff annoys me. If I can make it cheaper and open source, I will.
+          </p>
+          <p>
+            Former board member at <strong>HeatSync Labs</strong> — one of the longest-running hackerspaces in the Southwest. Co-founder of <strong>South West Maker Festival</strong>. I believe in do-ocracy and showing up.
+          </p>
+          <div class="quote-box">
+            "This all started because I was annoyed. The options out there are expensive and sparse. We live in the future — let's update things to reflect that."
+            <span class="quote-source">— Me, on most projects</span>
+          </div>
+        </div>
+        <div class="about-visual">
+          <div class="about-box">
+            <div class="about-box-inner">
+              <i class="fa-solid fa-bolt big-icon"></i>
+              <h3>@virgilvox</h3>
+              <p style="font-size: 14px; color: #555;">
+                IoT, robots, javascripts, art, Star Trek. Mesa, AZ.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOCUS AREAS ========== -->
+  <section id="focus" class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">WHAT I DO</div>
+        <h2 class="section-title" style="color: var(--paper);">Focus Areas</h2>
+        <p class="section-subtitle">The things that keep me up at 2am debugging.</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card paper-texture">
+          <div class="feature-tag">CREATIVE</div>
+          <i class="fa-solid fa-display feature-icon"></i>
+          <h3 class="feature-title">Projection Mapping</h3>
+          <p class="feature-desc">Building browser-native tools for projection mapping. Because existing software is expensive and I was annoyed.</p>
+        </div>
+        
+        <div class="feature-card paper-texture">
+          <div class="feature-tag">HARDWARE</div>
+          <i class="fa-solid fa-microchip feature-icon"></i>
+          <h3 class="feature-title">Embedded Systems</h3>
+          <p class="feature-desc">ESP32, Arduino, MQTT, cellular IoT. Making physical things talk to digital things without the corporate nonsense.</p>
+        </div>
+        
+        <div class="feature-card paper-texture">
+          <div class="feature-tag">EDUCATION</div>
+          <i class="fa-solid fa-chalkboard-user feature-icon"></i>
+          <h3 class="feature-title">Developer Education</h3>
+          <p class="feature-desc">Writing tutorials, hosting workshops, making hardware accessible. 41+ projects on Hackster. Dev advocacy for hire.</p>
+        </div>
+        
+        <div class="feature-card paper-texture">
+          <div class="feature-tag">COMMUNITY</div>
+          <i class="fa-solid fa-users feature-icon"></i>
+          <h3 class="feature-title">Hackerspace Stuff</h3>
+          <p class="feature-desc">Governance, do-ocracy, conflict resolution. How communities work and why they break. Learned the hard way.</p>
+        </div>
+        
+        <div class="feature-card paper-texture">
+          <div class="feature-tag">TOOLS</div>
+          <i class="fa-solid fa-wand-magic-sparkles feature-icon"></i>
+          <h3 class="feature-title">Creative Tools</h3>
+          <p class="feature-desc">Zine makers, projection mapping studios, CRMs for niche workflows. If a tool doesn't exist, I'll build it.</p>
+        </div>
+        
+        <div class="feature-card paper-texture">
+          <div class="feature-tag">OPEN SOURCE</div>
+          <i class="fa-solid fa-code-branch feature-icon"></i>
+          <h3 class="feature-title">Open Everything</h3>
+          <p class="feature-desc">126 repos on GitHub. All projects documented and shared. Knowledge wants to be free.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PROJECTS ========== -->
+  <section id="projects" class="section paper-texture">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">STUFF I'VE MADE</div>
+        <h2 class="section-title">Projects</h2>
+        <p class="section-subtitle">Tools, zines, and things that probably took longer than they should have.</p>
+      </div>
+      
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-image">
+            <i class="fa-solid fa-display"></i>
+          </div>
+          <div class="project-content">
+            <span class="project-tag">CREATIVE TOOLS</span>
+            <h3 class="project-title">LumenCanvas</h3>
+            <p class="project-desc">Zero-install projection mapping studio that runs in your browser. Drag-warp simplicity, live coding, wireless casting to Chromecast/AirPlay. Because projection mapping software shouldn't cost $500.</p>
+            <a href="https://lumencanvas.studio" class="project-link">lumencanvas.studio <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-image" style="background: var(--accent);">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <div class="project-content">
+            <span class="project-tag">ZINE + INTERACTIVE</span>
+            <h3 class="project-title">The Hackerspace Game</h3>
+            <p class="project-desc">A punk DIY zine + web simulation about how communities work — and why they break. Do-ocracy, trust dynamics, missing stairs, burnout. Inspired by Nicky Case.</p>
+            <a href="#" class="project-link">Read / Play It <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-image" style="background: #2a2;">
+            <i class="fa-solid fa-scissors"></i>
+          </div>
+          <div class="project-content">
+            <span class="project-tag">CREATIVE TOOLS</span>
+            <h3 class="project-title">Zeenster</h3>
+            <p class="project-desc">Create printable zines in your browser. Resize, arrange, export to PDF or PNG. Free, open-source, privacy-respecting. No account needed.</p>
+            <a href="https://zeenster.com" class="project-link">zeenster.com <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-image" style="background: #22a;">
+            <i class="fa-solid fa-rocket"></i>
+          </div>
+          <div class="project-content">
+            <span class="project-tag">DEV REL</span>
+            <h3 class="project-title">LaunchCue</h3>
+            <p class="project-desc">A CRM for developer relations consultants. Track outreach, manage relationships, organize launches. Built because existing CRMs are overkill for this.</p>
+            <a href="https://launchcue.app" class="project-link">launchcue.app <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== WRITING ========== -->
+  <section id="writing" class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">TUTORIALS & GUIDES</div>
+        <h2 class="section-title" style="color: var(--paper);">Writing</h2>
+        <p class="section-subtitle">Hardware guides, zines, and the occasional rant about why things should be easier.</p>
+      </div>
+      
+      <div class="principles-list">
+        <div class="principle">
+          <span class="principle-num">→</span>
+          <div>
+            <div class="principle-title">MQTT with Arduino Uno R4 WiFi and EMQX</div>
+            <p class="principle-desc">Connect your Arduino to a powerful MQTT broker to enable IoT communication. Home automation, sensors, all that good stuff.</p>
+          </div>
+        </div>
+        
+        <div class="principle">
+          <span class="principle-num">→</span>
+          <div>
+            <div class="principle-title">Cellular Wardriving and Other IoT Shenanigans</div>
+            <p class="principle-desc">Using the Arduino MKR 1400 GSM for cellular projects. Wardriving for cell towers, connecting to IoT platforms, workshop guide.</p>
+          </div>
+        </div>
+        
+        <div class="principle">
+          <span class="principle-num">→</span>
+          <div>
+            <div class="principle-title">ESP32 LED Marquee using MQTT</div>
+            <p class="principle-desc">Build a scrolling text display using MQTT, neopixels, and an ESP32. Internet-controlled LED matrix. The framework is there, all you need is your creativity.</p>
+          </div>
+        </div>
+        
+        <div class="principle">
+          <span class="principle-num">→</span>
+          <div>
+            <div class="principle-title">Kiwi Jr: Open-Source Robotics Platform</div>
+            <p class="principle-desc">3D-printable omni-wheels, laser-cut chassis. Omni-wheels are way more fun than regular wheels. This started because I was annoyed at how expensive kits are.</p>
+          </div>
+        </div>
+        
+        <div class="principle">
+          <span class="principle-num">→</span>
+          <div>
+            <div class="principle-title">The Hackerspace Game (Zine)</div>
+            <p class="principle-desc">A DIY guide to do-ocracy, trust, conflict, missing stairs, burnout, and building resilient maker spaces. Everything I learned running a hackerspace.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="highlight-box" style="max-width: 700px; margin: 50px auto 0;">
+        41+ PROJECTS ON <a href="https://hackster.io/virgilvox" style="color: var(--accent);">HACKSTER.IO</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <section id="contact" class="cta-section">
+    <div class="container">
+      <h2 class="cta-title">Let's Build Something</h2>
+      <p class="cta-text">
+        Got a weird hardware project? Need dev rel? Want to collaborate on tools? Hit me up.
+      </p>
+      <div class="cta-buttons">
+        <a href="mailto:hello@hack.build" class="btn btn-cta">
+          <i class="fa-solid fa-envelope"></i> Get In Touch
+        </a>
+        <a href="https://github.com/virgilvox" class="btn btn-cta-alt">
+          <i class="fa-brands fa-github"></i> GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">hack<span class="dot">.</span>build</div>
+        <p>
+          Hardware hacker. New media artist. Dropout.<br>
+          Making things that blink, move, and occasionally require a fire extinguisher.
+        </p>
+        <div class="footer-social">
+          <a href="https://github.com/virgilvox"><i class="fa-brands fa-github"></i></a>
+          <a href="https://twitter.com/virgilvox"><i class="fa-brands fa-twitter"></i></a>
+          <a href="https://instagram.com/virgilvox"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://chaos.social/@virgilvox"><i class="fa-brands fa-mastodon"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-col">
+        <h4>Projects</h4>
+        <ul>
+          <li><a href="https://lumencanvas.studio">LumenCanvas</a></li>
+          <li><a href="https://zeenster.com">Zeenster</a></li>
+          <li><a href="https://launchcue.app">LaunchCue</a></li>
+          <li><a href="https://github.com/virgilvox">GitHub →</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-col">
+        <h4>Writing</h4>
+        <ul>
+          <li><a href="https://hackster.io/virgilvox">Hackster.io</a></li>
+          <li><a href="#">The Hackerspace Game</a></li>
+          <li><a href="#">Tutorials</a></li>
+          <li><a href="#">Zines</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="mailto:hello@hack.build">Email</a></li>
+          <li><a href="https://heatsynclabs.org">HeatSync Labs</a></li>
+          <li><a href="https://hackster.io/virgilvox">Hackster</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <span>© 2024 Moheeb Zara — @virgilvox — Mesa, AZ</span>
+      <div class="footer-stamp">BUILD<br>THINGS</div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleNav() {
+      document.getElementById('navLinks').classList.toggle('active');
+    }
+    
+    // Close nav when clicking a link (mobile)
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

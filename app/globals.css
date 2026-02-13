@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* Theme CSS variable tokens — set by ThemeProvider, consumed by Tailwind utilities */
+@theme {
+  --color-cv-bg: var(--cv-bg, #0a0a0f);
+  --color-cv-surface: var(--cv-surface, #12121a);
+  --color-cv-card: var(--cv-card, #16161f);
+  --color-cv-border: var(--cv-border, #2a2a3a);
+  --color-cv-text: var(--cv-text, #e8e6f0);
+  --color-cv-text-muted: var(--cv-text-muted, #8888a0);
+  --color-cv-text-dim: var(--cv-text-dim, #5a5a70);
+  --color-cv-accent: var(--cv-accent, #c8ff00);
+  --color-cv-accent-glow: var(--cv-accent-glow, rgba(200, 255, 0, 0.15));
+}
+
+/* Base styles */
+body {
+  background: var(--cv-bg, #0a0a0f);
+  color: var(--cv-text, #e8e6f0);
+}
+
+/* Selection color */
+::selection {
+  background: var(--cv-accent-glow, rgba(200, 255, 0, 0.15));
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cv-border, #2a2a3a); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cv-text-dim); }
+
+/* Print styles for PDF export */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; color: black; }
+}
+
+/* Tiptap editor styles */
+.tiptap {
+  outline: none;
+}
+.tiptap p {
+  margin-bottom: 0.75em;
+}
+.tiptap p:last-child {
+  margin-bottom: 0;
+}
+.tiptap a {
+  color: var(--cv-accent);
+  text-decoration: underline;
+}
+.tiptap .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--cv-text-dim);
+  pointer-events: none;
+  height: 0;
+}
