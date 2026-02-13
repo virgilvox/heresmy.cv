@@ -23,6 +23,7 @@ const schema = defineSchema({
     avatarStorageId: v.optional(v.id("_storage")),
     isPublished: v.boolean(),
     viewCount: v.number(),
+    lastViewedAt: v.optional(v.number()),
     seoTitle: v.optional(v.string()),
     seoDescription: v.optional(v.string()),
   })

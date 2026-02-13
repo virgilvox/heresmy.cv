@@ -69,14 +69,14 @@ export function ProjectsBlockEditor({ data, onUpdate }: Props) {
             className="w-full bg-transparent border border-cv-border rounded-md px-3 py-2 text-sm text-cv-text placeholder:text-cv-text-dim outline-none focus:border-cv-accent transition-colors resize-vertical"
           />
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               value={item.tag}
               onChange={(e) => updateItem(item.id, { tag: e.target.value })}
               placeholder="Tag (e.g., Open Source)"
-              className="flex-1 bg-transparent border border-cv-border rounded-md px-3 py-2 text-sm text-cv-text placeholder:text-cv-text-dim outline-none focus:border-cv-accent transition-colors"
+              className="sm:flex-1 bg-transparent border border-cv-border rounded-md px-3 py-2 text-sm text-cv-text placeholder:text-cv-text-dim outline-none focus:border-cv-accent transition-colors"
             />
-            <div className="flex-1 relative">
+            <div className="sm:flex-1 relative">
               <input
                 value={item.url}
                 onChange={(e) => updateItem(item.id, { url: e.target.value })}

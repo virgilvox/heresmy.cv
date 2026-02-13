@@ -5,7 +5,7 @@ import { paper } from "./themes/paper";
 import { hackbuild } from "./themes/hackbuild";
 import { terminal } from "./themes/terminal";
 import { shibuyaPunk } from "./themes/shibuya-punk";
-import { egirl } from "./themes/egirl";
+import { pastelDream } from "./themes/pastel-dream";
 import { forest } from "./themes/forest";
 import { brutalist } from "./themes/brutalist";
 import { executive } from "./themes/executive";
@@ -19,7 +19,7 @@ const themes: ThemeConfig[] = [
   hackbuild,
   terminal,
   shibuyaPunk,
-  egirl,
+  pastelDream,
   forest,
   brutalist,
   executive,

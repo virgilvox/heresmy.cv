@@ -89,6 +89,7 @@ export function Sidebar({
       {tab === "settings" && (
         <SettingsTab
           slug={profile.slug}
+          isPublished={profile.isPublished}
           seoTitle={profile.seoTitle}
           seoDescription={profile.seoDescription}
           onUpdateSlug={onUpdateSlug}

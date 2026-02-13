@@ -22,7 +22,7 @@ export function HeaderBlock({ data }: { data: HeaderBlockData }) {
       </div>
 
       {data.name && (
-        <h1 className="text-4xl font-bold font-serif tracking-tight mb-2">
+        <h1 className="text-4xl font-bold tracking-tight mb-2">
           {data.name}
         </h1>
       )}

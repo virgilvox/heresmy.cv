@@ -1,39 +1,57 @@
 @import "tailwindcss";
 
-/* Theme CSS variable tokens — set by ThemeProvider, consumed by Tailwind utilities */
+/* Theme CSS variable tokens — defaults (midnight theme).
+   ThemeProvider overrides --color-cv-* on its wrapper div via inline styles.
+   Tailwind utilities like bg-cv-bg read var(--color-cv-bg). */
 @theme {
-  --color-cv-bg: var(--cv-bg, #0a0a0f);
-  --color-cv-surface: var(--cv-surface, #12121a);
-  --color-cv-card: var(--cv-card, #16161f);
-  --color-cv-border: var(--cv-border, #2a2a3a);
-  --color-cv-text: var(--cv-text, #e8e6f0);
-  --color-cv-text-muted: var(--cv-text-muted, #8888a0);
-  --color-cv-text-dim: var(--cv-text-dim, #5a5a70);
-  --color-cv-accent: var(--cv-accent, #c8ff00);
-  --color-cv-accent-glow: var(--cv-accent-glow, rgba(200, 255, 0, 0.15));
+  --color-cv-bg: #0a0a0f;
+  --color-cv-surface: #12121a;
+  --color-cv-card: #16161f;
+  --color-cv-border: #2a2a3a;
+  --color-cv-text: #e8e6f0;
+  --color-cv-text-muted: #8888a0;
+  --color-cv-text-dim: #5a5a70;
+  --color-cv-accent: #c8ff00;
+  --color-cv-accent-glow: rgba(200, 255, 0, 0.15);
 }
 
 /* Base styles */
 body {
-  background: var(--cv-bg, #0a0a0f);
-  color: var(--cv-text, #e8e6f0);
+  background: var(--color-cv-bg);
+  color: var(--color-cv-text);
+}
+
+/* Theme heading & mono fonts (scoped to ThemeProvider) */
+[data-theme] h1, [data-theme] h2, [data-theme] h3, [data-theme] h4, [data-theme] h5, [data-theme] h6 {
+  font-family: var(--cv-font-heading);
+}
+[data-theme] code, [data-theme] pre {
+  font-family: var(--cv-font-mono);
 }
 
 /* Selection color */
 ::selection {
-  background: var(--cv-accent-glow, rgba(200, 255, 0, 0.15));
+  background: var(--color-cv-accent-glow);
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--cv-border, #2a2a3a); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--cv-text-dim); }
+::-webkit-scrollbar-thumb { background: var(--color-cv-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-cv-text-dim); }
 
 /* Print styles for PDF export */
 @media print {
   .no-print { display: none !important; }
-  body { background: white; color: black; }
+
+  /* Remove scrollbar styling that can leave artifacts */
+  ::-webkit-scrollbar { display: none; }
+
+  /* Prevent layout clipping */
+  html, body {
+    min-height: auto !important;
+    overflow: visible !important;
+  }
 }
 
 /* Tiptap editor styles */
@@ -47,13 +65,13 @@ body {
   margin-bottom: 0;
 }
 .tiptap a {
-  color: var(--cv-accent);
+  color: var(--color-cv-accent);
   text-decoration: underline;
 }
 .tiptap .is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: var(--cv-text-dim);
+  color: var(--color-cv-text-dim);
   pointer-events: none;
   height: 0;
 }

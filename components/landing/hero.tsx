@@ -34,8 +34,8 @@ export function Hero() {
 
       {/* Subtitle */}
       <p className="text-lg text-cv-text-muted leading-relaxed max-w-[520px] mx-auto mb-12 font-mono">
-        Build a resume that&apos;s also a landing page. No templates, no bloat
-        &mdash; just blocks you arrange. Get your link in under 5 minutes.
+        Build a resume that&apos;s also a landing page. No templates, no
+        bloat. Just blocks you arrange. Get your link in under 5 minutes.
       </p>
 
       {/* CTAs */}
@@ -47,7 +47,7 @@ export function Hero() {
           Start building <ArrowRight size={16} />
         </Link>
         <Link
-          href="/moheeb"
+          href="/example"
           className="border border-cv-border text-cv-text px-7 py-3.5 text-[15px] rounded-lg flex items-center gap-2 hover:border-cv-accent hover:text-cv-accent transition-colors"
         >
           <Eye size={16} /> See example

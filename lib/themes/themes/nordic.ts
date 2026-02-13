@@ -27,6 +27,7 @@ export const nordic: ThemeConfig = {
   },
   googleFontImports: [
     "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap",
   ],
   customCSS: `
     /* Generous whitespace */

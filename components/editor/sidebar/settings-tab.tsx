@@ -5,11 +5,12 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Download, Code, Share2, Check, X, Loader2 } from "lucide-react";
+import { Code, Share2, Check, X, Loader2, Printer } from "lucide-react";
 import { validateSlug as checkSlugFormat } from "@/lib/utils";
 
 interface SettingsTabProps {
   slug: string;
+  isPublished: boolean;
   seoTitle?: string;
   seoDescription?: string;
   onUpdateSlug: (slug: string) => void;
@@ -18,6 +19,7 @@ interface SettingsTabProps {
 
 export function SettingsTab({
   slug: currentSlug,
+  isPublished,
   seoTitle,
   seoDescription,
   onUpdateSlug,
@@ -60,8 +62,12 @@ export function SettingsTab({
     }
   }
 
-  function handlePdfDownload() {
-    window.open(`/api/pdf?slug=${currentSlug}`, "_blank");
+  function handlePrintPdf() {
+    if (!isPublished) {
+      alert("Publish your profile first to export as PDF.");
+      return;
+    }
+    window.open(`/${currentSlug}?print=true`, "_blank");
   }
 
   return (
@@ -150,11 +156,11 @@ export function SettingsTab({
         </p>
         <div className="space-y-1.5">
           <button
-            onClick={handlePdfDownload}
+            onClick={handlePrintPdf}
             className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-cv-border text-sm text-cv-text hover:border-cv-accent hover:text-cv-accent transition-colors cursor-pointer"
           >
-            <Download size={14} />
-            Download PDF
+            <Printer size={14} />
+            Print / Save as PDF
           </button>
           <button
             disabled

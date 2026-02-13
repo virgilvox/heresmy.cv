@@ -21,11 +21,26 @@ export const midnight: ThemeConfig = {
     "--cv-accent-glow": "rgba(200, 255, 0, 0.15)",
   },
   fonts: {
-    heading: "'Courier Prime', 'Courier New', monospace",
+    heading: "'Space Mono', 'Courier New', monospace",
     body: "'Courier Prime', 'Courier New', monospace",
-    mono: "'Courier Prime', 'Courier New', monospace",
+    mono: "'Space Mono', 'Courier New', monospace",
   },
   googleFontImports: [
     "https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap",
   ],
+  customCSS: `
+    /* Subtle grid background */
+    [data-theme="midnight"] {
+      background-image:
+        linear-gradient(rgba(200, 255, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 255, 0, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Electric glow on name */
+    [data-theme="midnight"] h1 {
+      text-shadow: 0 0 30px rgba(200, 255, 0, 0.15);
+    }
+  `,
 };

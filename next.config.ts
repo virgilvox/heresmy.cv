@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/settings",
+        destination: "/editor",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -4,10 +4,13 @@ import { notFound } from "next/navigation";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ProfileRenderer } from "@/components/profile/profile-renderer";
 import { ViewCounter } from "./view-counter";
+import { PrintTrigger } from "./print-trigger";
+import type { Block } from "@/lib/blocks/types";
 import type { Metadata } from "next";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -39,8 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ProfilePage({ params }: Props) {
+export default async function ProfilePage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const { print } = await searchParams;
   let profile;
 
   try {
@@ -59,8 +63,9 @@ export default async function ProfilePage({ params }: Props) {
       customizations={profile.customizations}
     >
       <div className="min-h-screen bg-cv-bg text-cv-text">
-        <ProfileRenderer blocks={profile.blocks} />
-        <ViewCounter slug={slug} />
+        <ProfileRenderer blocks={profile.blocks as Block[]} />
+        {print === "true" && <PrintTrigger />}
+        {print !== "true" && <ViewCounter slug={slug} />}
       </div>
     </ThemeProvider>
   );

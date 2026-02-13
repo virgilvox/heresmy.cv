@@ -1,8 +1,6 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,11 +10,9 @@ import { Github } from "lucide-react";
 
 export default function SignupPage() {
   const { signIn } = useAuthActions();
-  const createProfile = useMutation(api.profiles.createProfile);
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,17 +22,6 @@ export default function SignupPage() {
     setError("");
     try {
       await signIn("password", { email, password, flow: "signUp" });
-      // Generate a slug from the name, append random suffix to avoid conflicts
-      const baseSlug = name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "");
-      const slug = baseSlug
-        ? `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`
-        : `user-${Math.random().toString(36).slice(2, 8)}`;
-      await createProfile({ slug });
       router.push("/editor");
     } catch {
       setError("Could not create account. Try a different email.");
@@ -96,13 +81,6 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleEmailSignup} className="space-y-4">
-          <Input
-            type="text"
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
           <Input
             type="email"
             placeholder="Email"

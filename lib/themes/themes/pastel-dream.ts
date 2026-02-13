@@ -1,8 +1,8 @@
 import { ThemeConfig } from "../types";
 
-export const egirl: ThemeConfig = {
-  id: "egirl",
-  name: "E-Girl",
+export const pastelDream: ThemeConfig = {
+  id: "pastel-dream",
+  name: "Pastel Dream",
   description: "Pastel pink dreams with sparkle decorations. Soft, cute, and unapologetically kawaii.",
   preview: {
     bg: "#fff0f8",
@@ -31,13 +31,13 @@ export const egirl: ThemeConfig = {
   decorations: "sparkles",
   customCSS: `
     /* Soft rounded everything */
-    [data-theme="egirl"] [data-block] > div {
+    [data-theme="pastel-dream"] [data-block] > div {
       border-radius: 20px;
       box-shadow: 0 2px 16px rgba(255, 105, 180, 0.08);
     }
 
     /* Pastel gradient accent touches */
-    [data-theme="egirl"] h1 {
+    [data-theme="pastel-dream"] h1 {
       background: linear-gradient(135deg, #ff69b4, #b469ff, #69b4ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -45,21 +45,21 @@ export const egirl: ThemeConfig = {
     }
 
     /* Soft pink border glow on hover */
-    [data-theme="egirl"] [data-block] > div:hover {
+    [data-theme="pastel-dream"] [data-block] > div:hover {
       box-shadow:
         0 2px 16px rgba(255, 105, 180, 0.12),
         0 0 0 2px rgba(255, 105, 180, 0.1);
     }
 
     /* Rounded tags and badges */
-    [data-theme="egirl"] [data-tag] {
+    [data-theme="pastel-dream"] [data-tag] {
       border-radius: 999px;
       padding-left: 12px;
       padding-right: 12px;
     }
 
     /* Cute bullet replacement */
-    [data-theme="egirl"] ul li::marker {
+    [data-theme="pastel-dream"] ul li::marker {
       content: "~ ";
       color: #ff69b4;
     }

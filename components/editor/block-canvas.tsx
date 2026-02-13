@@ -63,7 +63,7 @@ export function BlockCanvas({
         items={blocks.map((b) => b.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className="space-y-2">
+        <div className="space-y-3">
           {blocks.map((block) => (
             <SortableBlock
               key={block.id}

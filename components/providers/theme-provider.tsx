@@ -16,20 +16,33 @@ export function ThemeProvider({ themeId, customizations, children }: ThemeProvid
   const theme = getTheme(themeId) || getTheme("midnight")!;
 
   const style = useMemo(() => {
-    const vars: Record<string, string> = { ...theme.variables };
+    const vars: Record<string, string> = {};
+
+    // Set both --cv-* (for customCSS compatibility) and --color-cv-* (for Tailwind utilities)
+    for (const [key, value] of Object.entries(theme.variables)) {
+      vars[key] = value;
+      // --cv-bg → --color-cv-bg
+      vars[key.replace("--cv-", "--color-cv-")] = value;
+    }
+
     if (customizations?.accentColor) {
       vars["--cv-accent"] = customizations.accentColor;
+      vars["--color-cv-accent"] = customizations.accentColor;
     }
+
+    // Set font variables for CSS targeting
+    vars["--cv-font-heading"] = theme.fonts.heading;
+    vars["--cv-font-body"] = theme.fonts.body;
+    vars["--cv-font-mono"] = theme.fonts.mono;
+
     return vars;
   }, [theme, customizations]);
 
-  const fontImports = theme.googleFontImports?.join("\n") || "";
-
   return (
-    <div style={style}>
-      {fontImports && (
+    <div data-theme={theme.id} style={style}>
+      {theme.googleFontImports?.length && (
         <style dangerouslySetInnerHTML={{
-          __html: theme.googleFontImports?.map(url => `@import url('${url}');`).join("\n") || ""
+          __html: theme.googleFontImports.map(url => `@import url('${url}');`).join("\n")
         }} />
       )}
       {theme.customCSS && (
@@ -37,7 +50,6 @@ export function ThemeProvider({ themeId, customizations, children }: ThemeProvid
       )}
       <div style={{
         fontFamily: customizations?.fontFamily || theme.fonts.body,
-        minHeight: "100vh",
       }}>
         {children}
       </div>

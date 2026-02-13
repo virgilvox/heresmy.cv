@@ -27,5 +27,25 @@ export const paper: ThemeConfig = {
   },
   googleFontImports: [
     "https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap",
+    "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap",
   ],
+  customCSS: `
+    /* Elegant heading underline */
+    [data-theme="paper"] h1 {
+      border-bottom: 2px solid var(--cv-accent);
+      display: inline-block;
+      padding-bottom: 4px;
+    }
+
+    /* Section headings: small caps */
+    [data-theme="paper"] h2 {
+      font-variant: small-caps;
+      letter-spacing: 0.06em;
+    }
+
+    /* Subtle warm card shadow */
+    [data-theme="paper"] .bg-cv-surface {
+      box-shadow: 0 1px 4px rgba(45, 41, 34, 0.06);
+    }
+  `,
 };

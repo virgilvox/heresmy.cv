@@ -16,6 +16,7 @@ interface Props {
 
 export function BioBlockEditor({ data, onUpdate }: Props) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       LinkExtension.configure({ openOnClick: false }),

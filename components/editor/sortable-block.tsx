@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { BlockRenderer } from "./block-renderer";
 import { blockRegistry } from "@/lib/blocks/registry";
 import type { Block } from "@/lib/blocks/types";
-import { GripVertical, Trash2, Eye, EyeOff } from "lucide-react";
+import { GripVertical, Trash2, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SortableBlockProps {
@@ -46,48 +46,56 @@ export function SortableBlock({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "bg-cv-surface border rounded-lg transition-all cursor-pointer",
+        "bg-cv-surface border rounded-lg transition-all",
         isActive
           ? "border-cv-accent/40 shadow-[0_0_0_1px_var(--cv-accent)/20]"
           : "border-cv-border",
         isDragging && "opacity-50 z-50",
         !block.visible && "opacity-50"
       )}
-      onClick={onSelect}
     >
       {/* Block Header */}
-      <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-transparent" style={isActive ? { borderBottomColor: "var(--cv-border)" } : {}}>
+      <div
+        className={cn(
+          "flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none",
+          isActive && "border-b border-cv-border"
+        )}
+        onClick={onSelect}
+      >
         <button
           aria-label="Drag to reorder"
-          className="cursor-grab text-cv-text-dim hover:text-cv-text-muted touch-none"
+          className="cursor-grab text-cv-text-dim hover:text-cv-text-muted touch-none shrink-0"
+          onClick={(e) => e.stopPropagation()}
           {...attributes}
           {...listeners}
         >
           <GripVertical size={14} />
         </button>
-        <span className="text-xs font-bold uppercase tracking-wider text-cv-accent">
+        <div className="text-cv-text-dim shrink-0">
+          {isActive ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </div>
+        <span className="text-xs font-bold uppercase tracking-wider text-cv-accent flex-1 truncate">
           {meta?.label || block.type}
         </span>
-        <div className="flex-1" />
         <button
           aria-label={block.visible ? "Hide block" : "Show block"}
-          className="p-1 text-cv-text-dim hover:text-cv-text-muted transition-colors"
+          className="p-1.5 text-cv-text-dim hover:text-cv-text-muted transition-colors shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             onToggleVisibility();
           }}
         >
-          {block.visible ? <Eye size={13} /> : <EyeOff size={13} />}
+          {block.visible ? <Eye size={14} /> : <EyeOff size={14} />}
         </button>
         <button
           aria-label="Delete block"
-          className="p-1 text-cv-text-dim hover:text-red-400 transition-colors"
+          className="p-1.5 text-cv-text-dim hover:text-red-400 transition-colors shrink-0"
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
           }}
         >
-          <Trash2 size={13} />
+          <Trash2 size={14} />
         </button>
       </div>
 

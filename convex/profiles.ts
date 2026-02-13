@@ -7,7 +7,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 const RESERVED_SLUGS = [
   "login", "signup", "editor", "settings", "api", "admin", "about",
   "help", "pricing", "blog", "terms", "privacy", "support", "docs",
-  "dashboard", "profile", "account", "auth", "new", "search",
+  "dashboard", "profile", "account", "auth", "new", "search", "example",
 ];
 
 const SLUG_REGEX = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
@@ -28,7 +28,7 @@ function validateSlug(slug: string): string {
 
 const VALID_THEME_IDS = [
   "midnight", "clean", "paper", "hackbuild", "terminal", "shibuya-punk",
-  "egirl", "forest", "brutalist", "executive", "retrowave", "nordic",
+  "pastel-dream", "forest", "brutalist", "executive", "retrowave", "nordic",
 ];
 
 const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
@@ -86,12 +86,67 @@ export const createProfile = mutation({
 
     if (slugTaken) throw new Error("Slug is already taken");
 
+    const starterBlocks = [
+      {
+        id: "header-1",
+        type: "header",
+        visible: true,
+        data: {
+          name: "Your Name",
+          tagline: "What you do in one line.",
+          location: "",
+          avatarUrl: "",
+        },
+      },
+      {
+        id: "bio-1",
+        type: "bio",
+        visible: true,
+        data: {
+          content: "",
+        },
+      },
+      {
+        id: "experience-1",
+        type: "experience",
+        visible: true,
+        data: {
+          items: [],
+        },
+      },
+      {
+        id: "skills-1",
+        type: "skills",
+        visible: true,
+        data: {
+          items: [],
+          layout: "pills",
+        },
+      },
+      {
+        id: "projects-1",
+        type: "projects",
+        visible: true,
+        data: {
+          items: [],
+        },
+      },
+      {
+        id: "links-1",
+        type: "links",
+        visible: true,
+        data: {
+          items: [],
+        },
+      },
+    ];
+
     const profileId = await ctx.db.insert("profiles", {
       userId,
       slug,
       themeId: "midnight",
       customizations: {},
-      blocks: [],
+      blocks: starterBlocks,
       isPublished: false,
       viewCount: 0,
     });
@@ -264,9 +319,15 @@ export const incrementViewCount = mutation({
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .unique();
 
-    if (!profile) throw new Error("Profile not found");
+    if (!profile) return;
 
-    await ctx.db.patch(profile._id, { viewCount: profile.viewCount + 1 });
+    const now = Date.now();
+    if (profile.lastViewedAt && now - profile.lastViewedAt < 5000) return;
+
+    await ctx.db.patch(profile._id, {
+      viewCount: profile.viewCount + 1,
+      lastViewedAt: now,
+    });
   },
 });
 

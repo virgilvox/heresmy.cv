@@ -10,12 +10,18 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { createBlock } from "@/lib/blocks/types";
 import type { Block, BlockType } from "@/lib/blocks/types";
 import { useDebouncedCallback } from "use-debounce";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Eye,
   Check,
   Menu,
   X,
+  Copy,
+  ExternalLink,
+  LogOut,
+  Cloud,
+  MoreVertical,
 } from "lucide-react";
 
 export default function EditorPage() {
@@ -27,6 +33,8 @@ export default function EditorPage() {
   const updateSeo = useMutation(api.profiles.updateSeo);
   const publish = useMutation(api.profiles.publish);
   const createProfile = useMutation(api.profiles.createProfile);
+  const { signOut } = useAuthActions();
+  const router = useRouter();
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
@@ -34,6 +42,12 @@ export default function EditorPage() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const creatingRef = useRef(false);
+
+  // UX state
+  const [copied, setCopied] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync blocks from server on load
   useEffect(() => {
@@ -43,20 +57,38 @@ export default function EditorPage() {
     }
   }, [profile, initialized]);
 
-  // Create profile if none exists
+  // Create profile if none exists (retry with new slug on collision)
   useEffect(() => {
     if (profile === null && !creatingRef.current) {
       creatingRef.current = true;
-      const slug = `user-${Math.random().toString(36).slice(2, 8)}`;
-      void createProfile({ slug });
+      const attempt = async (retries = 3) => {
+        for (let i = 0; i < retries; i++) {
+          try {
+            const slug = `user-${Math.random().toString(36).slice(2, 8)}`;
+            await createProfile({ slug });
+            return;
+          } catch {
+            if (i === retries - 1) creatingRef.current = false;
+          }
+        }
+      };
+      void attempt();
     }
   }, [profile, createProfile]);
 
-  // Debounced save to Convex
+  // Debounced save to Convex with status tracking
   const debouncedSaveBlocks = useDebouncedCallback(
-    (newBlocks: Block[]) => {
+    async (newBlocks: Block[]) => {
       if (profile) {
-        void updateBlocks({ blocks: newBlocks });
+        setSaveStatus("saving");
+        try {
+          await updateBlocks({ blocks: newBlocks });
+          setSaveStatus("saved");
+          if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+          saveTimeoutRef.current = setTimeout(() => setSaveStatus("idle"), 2000);
+        } catch {
+          setSaveStatus("idle");
+        }
       }
     },
     500
@@ -113,6 +145,28 @@ export default function EditorPage() {
     [blocks, handleBlocksChange]
   );
 
+  const handleToggleBlock = useCallback(
+    (id: string) => {
+      setActiveBlockId((prev) => (prev === id ? null : id));
+    },
+    []
+  );
+
+  const handleCopyUrl = useCallback(() => {
+    if (!profile) return;
+    void navigator.clipboard.writeText(`https://heresmy.cv/${profile.slug}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [profile]);
+
+  const handlePublishToggle = useCallback(() => {
+    if (!profile) return;
+    if (profile.isPublished) {
+      if (!confirm("This will take your page offline. Continue?")) return;
+    }
+    void publish({ isPublished: !profile.isPublished });
+  }, [profile, publish]);
+
   if (!profile) {
     return (
       <div className="min-h-screen bg-cv-bg flex items-center justify-center">
@@ -128,40 +182,117 @@ export default function EditorPage() {
     >
       <div className="h-screen flex flex-col bg-cv-bg text-cv-text font-mono">
         {/* Top Bar */}
-        <div className="h-13 bg-cv-surface border-b border-cv-border flex items-center justify-between px-4 shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="h-13 bg-cv-surface border-b border-cv-border flex items-center justify-between px-3 sm:px-4 shrink-0 gap-2">
+          {/* Left: Logo + URL */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <Link
               href="/"
-              className="font-serif font-bold text-cv-text text-base"
+              className="font-serif font-bold text-cv-text text-base shrink-0"
             >
               heresmy<span className="text-cv-accent">.</span>cv
             </Link>
-            <span className="text-cv-text-dim">/</span>
-            <span className="text-cv-text-muted text-sm">
-              Editing: {profile.slug}
-            </span>
+
+            {/* Copyable URL bar — desktop only */}
+            <div className="hidden sm:flex items-center gap-1.5 min-w-0 bg-cv-bg/50 border border-cv-border rounded-md px-2 py-1">
+              <span className="text-cv-text-dim shrink-0">/</span>
+              <span className="text-cv-text text-xs truncate">{profile.slug}</span>
+              <button
+                onClick={handleCopyUrl}
+                className="shrink-0 p-0.5 text-cv-text-muted hover:text-cv-accent transition-colors cursor-pointer"
+                aria-label="Copy profile URL"
+              >
+                {copied ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+              </button>
+            </div>
           </div>
 
-          <div className="flex gap-2 items-center">
-            <button
-              aria-label="Toggle sidebar"
-              className="md:hidden p-2 text-cv-text-muted"
-              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-            >
-              {showMobileSidebar ? <X size={18} /> : <Menu size={18} />}
-            </button>
-            <Link
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Save indicator */}
+            {saveStatus !== "idle" && (
+              <div className="flex items-center gap-1 sm:gap-1.5 text-xs text-cv-text-muted">
+                {saveStatus === "saving" ? (
+                  <>
+                    <Cloud size={14} className="animate-pulse" />
+                    <span className="hidden sm:inline">Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check size={14} className="text-green-500" />
+                    <span className="hidden sm:inline text-green-500">Saved</span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Preview — opens in new tab */}
+            <a
               href={`/${profile.slug}`}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs border border-cv-border rounded-md text-cv-text hover:border-cv-accent transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-xs border border-cv-border rounded-md text-cv-text hover:border-cv-accent transition-colors"
             >
-              <Eye size={14} /> Preview
-            </Link>
+              <ExternalLink size={14} />
+              <span className="hidden sm:inline">Preview</span>
+            </a>
+
+            {/* Publish button */}
             <button
-              onClick={() => void publish({ isPublished: !profile.isPublished })}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold bg-cv-accent text-cv-bg rounded-md hover:opacity-90 transition-opacity cursor-pointer"
+              onClick={handlePublishToggle}
+              className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 text-xs font-bold bg-cv-accent text-cv-bg rounded-md hover:opacity-90 transition-opacity cursor-pointer whitespace-nowrap"
             >
               <Check size={14} />
               {profile.isPublished ? "Published" : "Publish"}
+            </button>
+
+            {/* More menu — contains copy URL + sign out */}
+            <div className="relative">
+              <button
+                onClick={() => setShowAccountMenu(!showAccountMenu)}
+                className="flex p-2 text-cv-text-muted hover:text-cv-accent transition-colors cursor-pointer"
+                aria-label="More options"
+              >
+                <MoreVertical size={16} />
+              </button>
+              {showAccountMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowAccountMenu(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-1 z-50 bg-cv-surface border border-cv-border rounded-md shadow-lg py-1 min-w-[160px]">
+                    <button
+                      onClick={() => {
+                        handleCopyUrl();
+                        setShowAccountMenu(false);
+                      }}
+                      className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs text-cv-text hover:bg-cv-bg transition-colors cursor-pointer"
+                    >
+                      <Copy size={13} />
+                      Copy URL
+                    </button>
+                    <div className="border-t border-cv-border my-1" />
+                    <button
+                      onClick={() => {
+                        void signOut().then(() => router.push("/"));
+                      }}
+                      className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs text-red-500 hover:bg-cv-bg transition-colors cursor-pointer"
+                    >
+                      <LogOut size={13} />
+                      Sign out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Mobile sidebar toggle */}
+            <button
+              aria-label="Toggle sidebar"
+              className="md:hidden p-2 text-cv-text-muted cursor-pointer"
+              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+            >
+              {showMobileSidebar ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>
@@ -171,11 +302,20 @@ export default function EditorPage() {
           {/* Block Canvas */}
           <div className="flex-1 overflow-auto p-4 md:p-8">
             <div className="max-w-[680px] mx-auto">
+              {/* Empty state for new users */}
+              {blocks.length === 0 && (
+                <div className="text-center py-12 mb-6">
+                  <h2 className="text-lg font-bold text-cv-text mb-2">Start building your CV</h2>
+                  <p className="text-sm text-cv-text-muted">
+                    Add your first block below. Start with a Header for your name and tagline.
+                  </p>
+                </div>
+              )}
               <BlockCanvas
                 blocks={blocks}
                 activeBlockId={activeBlockId}
                 onBlocksChange={handleBlocksChange}
-                onSelectBlock={setActiveBlockId}
+                onSelectBlock={handleToggleBlock}
                 onUpdateBlock={handleUpdateBlock}
                 onDeleteBlock={handleDeleteBlock}
                 onToggleVisibility={handleToggleVisibility}
@@ -191,7 +331,7 @@ export default function EditorPage() {
               onTabChange={setSidebarTab}
               blocks={blocks}
               activeBlockId={activeBlockId}
-              onSelectBlock={setActiveBlockId}
+              onSelectBlock={handleToggleBlock}
               profile={profile}
               onUpdateTheme={(themeId) => void updateTheme({ themeId })}
               onUpdateCustomizations={(c) => void updateCustomizations({ customizations: c })}
@@ -210,7 +350,7 @@ export default function EditorPage() {
                   blocks={blocks}
                   activeBlockId={activeBlockId}
                   onSelectBlock={(id) => {
-                    setActiveBlockId(id);
+                    handleToggleBlock(id);
                     setShowMobileSidebar(false);
                   }}
                   profile={profile}

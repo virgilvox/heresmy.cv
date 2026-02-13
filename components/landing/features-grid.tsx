@@ -11,7 +11,7 @@ const features = [
   {
     icon: Layers,
     title: "Block-based editor",
-    desc: "Drag and arrange content blocks \u2014 bio, experience, projects, links. No wrestling with templates.",
+    desc: "Drag and arrange content blocks: bio, experience, projects, links. No wrestling with templates.",
   },
   {
     icon: Eye,
@@ -26,12 +26,12 @@ const features = [
   {
     icon: Palette,
     title: "Make it yours",
-    desc: "Choose themes, fonts, accent colors. Professional or expressive \u2014 your call.",
+    desc: "Choose themes, fonts, accent colors. Professional or expressive, your call.",
   },
   {
     icon: Zap,
     title: "Instant link",
-    desc: "heresmy.cv/you \u2014 share one URL everywhere. LinkedIn, email signatures, business cards.",
+    desc: "heresmy.cv/you. Share one URL everywhere. LinkedIn, email signatures, business cards.",
   },
   {
     icon: Share2,
