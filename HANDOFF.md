@@ -8,12 +8,12 @@ A resume/portfolio builder where users sign up, build a profile using a block-ba
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 15 App Router (TypeScript) |
+| Framework | Next.js 16.1.6 App Router (TypeScript) |
 | Styling | Tailwind CSS 4 (CSS-variable theme tokens) |
 | Backend | Convex (database, auth, file storage) |
 | Auth | @convex-dev/auth (GitHub, Google, Password) |
 | Editor | @dnd-kit (drag-and-drop), @tiptap (rich text) |
-| Deployment | Netlify (serverless functions for PDF) |
+| Deployment | Netlify |
 
 ## Quick Start
 
@@ -52,13 +52,12 @@ app/
 │   └── signup/page.tsx                 Signup → creates profile with generated slug
 ├── (dashboard)/
 │   ├── layout.tsx                      Auth guard (redirects to /login if unauthenticated)
-│   ├── editor/page.tsx                 Block editor (main app surface)
-│   └── settings/page.tsx              Account settings
+│   └── editor/page.tsx                 Block editor (main app surface)
 ├── [slug]/
 │   ├── page.tsx                        Public profile (SSR + generateMetadata)
 │   ├── view-counter.tsx               Client-side view count increment
-│   └── opengraph-image.tsx            Dynamic OG image generation
-└── api/pdf/route.ts                   PDF export endpoint
+│   └── print-trigger.tsx              Client-side print trigger
+└── example/page.tsx                   Example/demo page
 
 components/
 ├── ui/                                 Shared primitives (button, input, textarea)
@@ -69,7 +68,7 @@ components/
 │   ├── block-renderer.tsx             Dispatches to correct block editor by type
 │   ├── add-block-menu.tsx             Block type picker
 │   ├── blocks/                        10 block EDITOR components
-│   │   ├── header.tsx                 Name, tagline, location inputs
+│   │   ├── header.tsx                 Name, tagline, location, avatar upload
 │   │   ├── bio.tsx                    Tiptap rich text editor
 │   │   ├── experience.tsx             List of roles with add/remove
 │   │   ├── skills.tsx                 Tag pills with layout selector
@@ -100,6 +99,7 @@ components/
 
 lib/
 ├── utils.ts                           cn(), slugify(), validateSlug(), getStorageUrl()
+├── export.ts                          JSON and HTML export utilities
 ├── blocks/
 │   ├── types.ts                       Discriminated union type system (10 block types)
 │   └── registry.ts                    Block metadata (labels, icons, defaults)
@@ -130,8 +130,6 @@ convex/
 ├── files.ts                           File upload URL generation
 └── _generated/                        Stubs (replaced by `npx convex dev`)
 
-netlify/functions/
-└── generate-pdf.mts                   Puppeteer-core PDF serverless function
 ```
 
 ## Architecture Decisions
@@ -215,25 +213,10 @@ Required environment variables in Netlify dashboard:
 - `CONVEX_DEPLOY_KEY` — from Convex dashboard (Settings → Deploy keys)
 - `NEXT_PUBLIC_CONVEX_URL` — your Convex deployment URL
 
-For PDF export, the Netlify function at `netlify/functions/generate-pdf.mts` uses `puppeteer-core` + `@sparticuz/chromium-min`. These are **not yet installed** — add them before deploying:
-```bash
-npm install puppeteer-core @sparticuz/chromium-min
-```
+PDF export is client-side via `window.print()` with `@media print` stylesheet rules in `globals.css`.
 
 ## Known Gaps / TODO
 
-1. **Convex _generated files** — Run `npx convex dev` to generate proper typed modules. The stubs work for compilation but don't provide full type safety in convex/ files.
+1. **Convex `_generated` files** — Run `npx convex dev` to generate proper typed modules. The stubs work for compilation but don't provide full type safety in convex/ files.
 
-2. **PDF dependencies** — `puppeteer-core` and `@sparticuz/chromium-min` need to be installed for the PDF export Netlify function.
-
-3. **Avatar upload UI** — The `uploadAvatar` mutation exists but there's no file upload widget in the editor UI yet. The header block has an `avatarUrl` text input as a placeholder.
-
-4. **HTML/JSON export** — Settings tab has placeholder buttons for "Export HTML" and "Export JSON" that aren't wired up yet.
-
-5. **Print stylesheet** — `globals.css` has basic `@media print` rules. May need refinement for specific themes.
-
-6. **OAuth redirect URLs** — GitHub and Google OAuth apps need the correct redirect URLs configured pointing to your Convex deployment's auth callback endpoint.
-
-7. **Reserved slug enforcement** — The `slugs.ts` check happens client-side via query. The `createProfile` and `updateSlug` mutations check uniqueness but don't check the reserved words list — consider adding server-side validation.
-
-8. **Theme decorations integration** — The `ThemeDecorations` component exists but needs to be rendered in the public profile page (`app/[slug]/page.tsx`) and optionally in the editor preview. Currently imported but not called.
+2. **OAuth redirect URLs** — GitHub and Google OAuth apps need the correct redirect URLs configured pointing to your Convex deployment's auth callback endpoint.
