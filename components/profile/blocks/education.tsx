@@ -1,25 +1,14 @@
-"use client";
+import type { EducationBlockData } from "@/lib/blocks/types";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import type { ExperienceBlockData } from "@/lib/blocks/types";
-
-const INITIAL_COUNT = 3;
-
-export function ExperienceBlock({ data }: { data: ExperienceBlockData }) {
+export function EducationBlock({ data }: { data: EducationBlockData }) {
   const items = data.items || [];
-  const [expanded, setExpanded] = useState(false);
 
   if (items.length === 0) return null;
-
-  const hasMore = items.length > INITIAL_COUNT;
-  const visibleItems = expanded ? items : items.slice(0, INITIAL_COUNT);
-  const hiddenCount = items.length - INITIAL_COUNT;
 
   return (
     <div className="mb-12">
       <div className="relative border-l-2 border-cv-border pl-6 space-y-8">
-        {visibleItems.map((item, index) => {
+        {items.map((item, index) => {
           const isAccent = index === 0 || item.current;
 
           return (
@@ -35,11 +24,13 @@ export function ExperienceBlock({ data }: { data: ExperienceBlockData }) {
 
               <div>
                 <h3 className="text-sm font-semibold text-cv-text leading-snug">
-                  {item.role}
-                  {item.org && (
+                  {item.degree && item.field
+                    ? `${item.degree} in ${item.field}`
+                    : item.degree || item.field}
+                  {item.school && (
                     <span className="font-normal text-cv-text-muted">
                       {" "}
-                      at {item.org}
+                      at {item.school}
                     </span>
                   )}
                 </h3>
@@ -65,21 +56,6 @@ export function ExperienceBlock({ data }: { data: ExperienceBlockData }) {
           );
         })}
       </div>
-
-      {hasMore && (
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="mt-6 flex items-center gap-1.5 text-xs font-medium text-cv-accent hover:text-cv-text transition-colors cursor-pointer group"
-        >
-          <ChevronDown
-            size={14}
-            className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-          />
-          {expanded
-            ? "Show less"
-            : `Show ${hiddenCount} more position${hiddenCount === 1 ? "" : "s"}`}
-        </button>
-      )}
     </div>
   );
 }

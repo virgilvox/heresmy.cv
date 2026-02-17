@@ -13,6 +13,21 @@ export interface BioBlockData {
   content: string;
 }
 
+export interface IntroBlockData {
+  name: string;
+  tagline: string;
+  location: string;
+  avatarUrl: string;
+  bio: string;
+  quote?: string;
+  quoteAttribution?: string;
+}
+
+export interface HeadingBlockData {
+  text: string;
+  level: "h2" | "h3";
+}
+
 export interface ExperienceItem {
   id: string;
   role: string;
@@ -95,6 +110,55 @@ export interface CustomHtmlBlockData {
   height: number;
 }
 
+export interface EducationItem {
+  id: string;
+  school: string;
+  degree: string;
+  field: string;
+  period: string;
+  description?: string;
+  current: boolean;
+}
+
+export interface EducationBlockData {
+  items: EducationItem[];
+}
+
+export interface TestimonialItem {
+  id: string;
+  quote: string;
+  author: string;
+  role?: string;
+  org?: string;
+}
+
+export interface TestimonialsBlockData {
+  items: TestimonialItem[];
+}
+
+export interface StatItem {
+  id: string;
+  value: string;
+  label: string;
+}
+
+export interface StatsBlockData {
+  items: StatItem[];
+  layout: "row" | "grid";
+}
+
+export interface AwardItem {
+  id: string;
+  title: string;
+  year: string;
+  location?: string;
+  description?: string;
+}
+
+export interface AwardsBlockData {
+  items: AwardItem[];
+}
+
 // ── Block types (discriminated union members) ────────────────────────────────
 
 export interface HeaderBlock {
@@ -109,6 +173,20 @@ export interface BioBlock {
   type: "bio";
   visible: boolean;
   data: BioBlockData;
+}
+
+export interface IntroBlock {
+  id: string;
+  type: "intro";
+  visible: boolean;
+  data: IntroBlockData;
+}
+
+export interface HeadingBlock {
+  id: string;
+  type: "heading";
+  visible: boolean;
+  data: HeadingBlockData;
 }
 
 export interface ExperienceBlock {
@@ -167,11 +245,41 @@ export interface CustomHtmlBlock {
   data: CustomHtmlBlockData;
 }
 
+export interface EducationBlock {
+  id: string;
+  type: "education";
+  visible: boolean;
+  data: EducationBlockData;
+}
+
+export interface TestimonialsBlock {
+  id: string;
+  type: "testimonials";
+  visible: boolean;
+  data: TestimonialsBlockData;
+}
+
+export interface StatsBlock {
+  id: string;
+  type: "stats";
+  visible: boolean;
+  data: StatsBlockData;
+}
+
+export interface AwardsBlock {
+  id: string;
+  type: "awards";
+  visible: boolean;
+  data: AwardsBlockData;
+}
+
 // ── Union type & BlockType literal ───────────────────────────────────────────
 
 export type Block =
   | HeaderBlock
   | BioBlock
+  | IntroBlock
+  | HeadingBlock
   | ExperienceBlock
   | SkillsBlock
   | ProjectsBlock
@@ -179,7 +287,11 @@ export type Block =
   | LinksBlock
   | VideoBlock
   | ImageBlock
-  | CustomHtmlBlock;
+  | CustomHtmlBlock
+  | EducationBlock
+  | TestimonialsBlock
+  | StatsBlock
+  | AwardsBlock;
 
 export type BlockType = Block["type"];
 
@@ -195,6 +307,19 @@ const defaultDataMap: Record<BlockType, Block["data"]> = {
   bio: {
     content: "",
   } as BioBlockData,
+  intro: {
+    name: "",
+    tagline: "",
+    location: "",
+    avatarUrl: "",
+    bio: "",
+    quote: "",
+    quoteAttribution: "",
+  } as IntroBlockData,
+  heading: {
+    text: "",
+    level: "h2",
+  } as HeadingBlockData,
   experience: {
     items: [],
   } as ExperienceBlockData,
@@ -223,6 +348,19 @@ const defaultDataMap: Record<BlockType, Block["data"]> = {
     html: "",
     height: 200,
   } as CustomHtmlBlockData,
+  education: {
+    items: [],
+  } as EducationBlockData,
+  testimonials: {
+    items: [],
+  } as TestimonialsBlockData,
+  stats: {
+    items: [],
+    layout: "row",
+  } as StatsBlockData,
+  awards: {
+    items: [],
+  } as AwardsBlockData,
 };
 
 // ── Factory function ─────────────────────────────────────────────────────────

@@ -13,10 +13,17 @@ import {
   Play,
   Image,
   Code2,
+  UserCircle,
+  Type,
+  GraduationCap,
+  Quote,
+  BarChart3,
+  Trophy,
 } from "lucide-react";
 
 const iconMap = {
   User, FileText, Briefcase, Code, Layers, BookOpen, Link, Play, Image, Code2,
+  UserCircle, Type, GraduationCap, Quote, BarChart3, Trophy,
 } as Record<string, React.ComponentType<{ size?: number }>>;
 
 interface AddBlockMenuProps {
@@ -24,7 +31,8 @@ interface AddBlockMenuProps {
 }
 
 export function AddBlockMenu({ onAdd }: AddBlockMenuProps) {
-  const types = Object.entries(blockRegistry) as [BlockType, (typeof blockRegistry)[BlockType]][];
+  const types = (Object.entries(blockRegistry) as [BlockType, (typeof blockRegistry)[BlockType]][])
+    .filter(([, meta]) => !meta.hidden);
 
   return (
     <div className="border-2 border-dashed border-cv-border rounded-xl p-6 text-center mt-4">

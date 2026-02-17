@@ -1,6 +1,8 @@
 import type { Block } from "@/lib/blocks/types";
 import { HeaderBlock } from "./blocks/header";
 import { BioBlock } from "./blocks/bio";
+import { IntroBlock } from "./blocks/intro";
+import { HeadingBlock } from "./blocks/heading";
 import { ExperienceBlock } from "./blocks/experience";
 import { SkillsBlock } from "./blocks/skills";
 import { ProjectsBlock } from "./blocks/projects";
@@ -9,6 +11,10 @@ import { LinksBlock } from "./blocks/links";
 import { VideoBlock } from "./blocks/video";
 import { ImageBlock } from "./blocks/image";
 import { CustomHtmlBlock } from "./blocks/custom-html";
+import { EducationBlock } from "./blocks/education";
+import { TestimonialsBlock } from "./blocks/testimonials";
+import { StatsBlock } from "./blocks/stats";
+import { AwardsBlock } from "./blocks/awards";
 
 import {
   Briefcase,
@@ -19,6 +25,10 @@ import {
   Play,
   Image as ImageIcon,
   Code,
+  GraduationCap,
+  MessageSquareQuote,
+  BarChart3,
+  Trophy,
 } from "lucide-react";
 
 const sectionMeta: Record<
@@ -33,6 +43,10 @@ const sectionMeta: Record<
   video: { label: "Videos", icon: Play },
   image: { label: "Image", icon: ImageIcon },
   "custom-html": { label: "Custom", icon: Code },
+  education: { label: "Education", icon: GraduationCap },
+  testimonials: { label: "Testimonials", icon: MessageSquareQuote },
+  stats: { label: "Stats", icon: BarChart3 },
+  awards: { label: "Awards & Achievements", icon: Trophy },
 };
 
 function SectionHeader({ type }: { type: string }) {
@@ -57,6 +71,10 @@ function renderBlock(block: Block) {
       return <HeaderBlock key={block.id} data={block.data} />;
     case "bio":
       return <BioBlock key={block.id} data={block.data} />;
+    case "intro":
+      return <IntroBlock key={block.id} data={block.data} />;
+    case "heading":
+      return <HeadingBlock key={block.id} data={block.data} />;
     case "experience":
       return (
         <div key={block.id}>
@@ -111,6 +129,34 @@ function renderBlock(block: Block) {
         <div key={block.id}>
           <SectionHeader type="custom-html" />
           <CustomHtmlBlock data={block.data} />
+        </div>
+      );
+    case "education":
+      return (
+        <div key={block.id}>
+          <SectionHeader type="education" />
+          <EducationBlock data={block.data} />
+        </div>
+      );
+    case "testimonials":
+      return (
+        <div key={block.id}>
+          <SectionHeader type="testimonials" />
+          <TestimonialsBlock data={block.data} />
+        </div>
+      );
+    case "stats":
+      return (
+        <div key={block.id}>
+          <SectionHeader type="stats" />
+          <StatsBlock data={block.data} />
+        </div>
+      );
+    case "awards":
+      return (
+        <div key={block.id}>
+          <SectionHeader type="awards" />
+          <AwardsBlock data={block.data} />
         </div>
       );
     default:

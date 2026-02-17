@@ -88,22 +88,17 @@ export const createProfile = mutation({
 
     const starterBlocks = [
       {
-        id: "header-1",
-        type: "header",
+        id: "intro-1",
+        type: "intro",
         visible: true,
         data: {
           name: "Your Name",
           tagline: "What you do in one line.",
           location: "",
           avatarUrl: "",
-        },
-      },
-      {
-        id: "bio-1",
-        type: "bio",
-        visible: true,
-        data: {
-          content: "",
+          bio: "",
+          quote: "",
+          quoteAttribution: "",
         },
       },
       {

@@ -5,6 +5,7 @@ export interface BlockMeta {
   icon: string;
   description: string;
   defaultData: Record<string, unknown>;
+  hidden?: boolean;
 }
 
 export const blockRegistry: Record<BlockType, BlockMeta> = {
@@ -13,12 +14,26 @@ export const blockRegistry: Record<BlockType, BlockMeta> = {
     icon: "User",
     description: "Your name, tagline, location, and avatar",
     defaultData: { name: "", tagline: "", location: "", avatarUrl: "" },
+    hidden: true,
   },
   bio: {
     label: "Bio",
     icon: "FileText",
     description: "A rich-text biography or summary section",
     defaultData: { content: "" },
+    hidden: true,
+  },
+  intro: {
+    label: "Intro",
+    icon: "UserCircle",
+    description: "Profile intro with avatar, bio, and optional pull quote",
+    defaultData: { name: "", tagline: "", location: "", avatarUrl: "", bio: "", quote: "", quoteAttribution: "" },
+  },
+  heading: {
+    label: "Heading",
+    icon: "Type",
+    description: "A section heading (H2 or H3)",
+    defaultData: { text: "", level: "h2" },
   },
   experience: {
     label: "Experience",
@@ -67,6 +82,30 @@ export const blockRegistry: Record<BlockType, BlockMeta> = {
     icon: "Code2",
     description: "Embed arbitrary HTML with a configurable height",
     defaultData: { html: "", height: 200 },
+  },
+  education: {
+    label: "Education",
+    icon: "GraduationCap",
+    description: "Academic background with schools, degrees, and fields of study",
+    defaultData: { items: [] },
+  },
+  testimonials: {
+    label: "Testimonials",
+    icon: "Quote",
+    description: "Quotes and endorsements from colleagues or clients",
+    defaultData: { items: [] },
+  },
+  stats: {
+    label: "Stats",
+    icon: "BarChart3",
+    description: "Key metrics and numbers displayed as a row or grid",
+    defaultData: { items: [], layout: "row" },
+  },
+  awards: {
+    label: "Awards",
+    icon: "Trophy",
+    description: "Awards, achievements, and recognitions",
+    defaultData: { items: [] },
   },
 };
 
