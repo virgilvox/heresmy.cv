@@ -3,6 +3,8 @@ import { api } from "@/convex/_generated/api";
 import { notFound } from "next/navigation";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ProfileRenderer } from "@/components/profile/profile-renderer";
+import { ThemeDecorations } from "@/components/profile/decorations";
+import { getTheme } from "@/lib/themes/registry";
 import { ViewCounter } from "./view-counter";
 import { PrintTrigger } from "./print-trigger";
 import type { Block } from "@/lib/blocks/types";
@@ -57,12 +59,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     notFound();
   }
 
+  const theme = getTheme(profile.themeId);
+
   return (
     <ThemeProvider
       themeId={profile.themeId}
       customizations={profile.customizations}
     >
       <div className="min-h-screen bg-cv-bg text-cv-text">
+        <ThemeDecorations type={theme?.decorations} />
         <ProfileRenderer blocks={profile.blocks as Block[]} />
         {print === "true" && <PrintTrigger />}
         {print !== "true" && <ViewCounter slug={slug} />}

@@ -94,6 +94,7 @@ export function Sidebar({
           seoDescription={profile.seoDescription}
           onUpdateSlug={onUpdateSlug}
           onUpdateSeo={onUpdateSeo}
+          profile={profile}
         />
       )}
     </div>

@@ -22,6 +22,7 @@ const RESERVED_SLUGS = [
   "auth",
   "new",
   "search",
+  "example",
 ];
 
 const SLUG_REGEX = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;

@@ -1,5 +1,7 @@
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ProfileRenderer } from "@/components/profile/profile-renderer";
+import { ThemeDecorations } from "@/components/profile/decorations";
+import { getTheme } from "@/lib/themes/registry";
 import type { Block } from "@/lib/blocks/types";
 import type { Metadata } from "next";
 
@@ -182,9 +184,12 @@ const exampleBlocks: Block[] = [
 ];
 
 export default function ExamplePage() {
+  const theme = getTheme("hackbuild");
+
   return (
     <ThemeProvider themeId="hackbuild" customizations={{}}>
       <div className="min-h-screen bg-cv-bg text-cv-text">
+        <ThemeDecorations type={theme?.decorations} />
         <ProfileRenderer blocks={exampleBlocks} />
       </div>
     </ThemeProvider>

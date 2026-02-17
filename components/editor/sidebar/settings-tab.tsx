@@ -5,8 +5,10 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Code, Share2, Check, X, Loader2, Printer } from "lucide-react";
+import { Code, Check, X, Loader2, Printer, Download } from "lucide-react";
 import { validateSlug as checkSlugFormat } from "@/lib/utils";
+import { exportAsJson, exportAsHtml } from "@/lib/export";
+import type { Block } from "@/lib/blocks/types";
 
 interface SettingsTabProps {
   slug: string;
@@ -15,6 +17,13 @@ interface SettingsTabProps {
   seoDescription?: string;
   onUpdateSlug: (slug: string) => void;
   onUpdateSeo: (seo: { seoTitle?: string; seoDescription?: string }) => void;
+  profile?: {
+    blocks: Block[];
+    themeId: string;
+    customizations?: { accentColor?: string; fontFamily?: string };
+    slug: string;
+    isPublished: boolean;
+  };
 }
 
 export function SettingsTab({
@@ -24,6 +33,7 @@ export function SettingsTab({
   seoDescription,
   onUpdateSlug,
   onUpdateSeo,
+  profile,
 }: SettingsTabProps) {
   const [slugInput, setSlugInput] = useState(currentSlug);
   const [slugDirty, setSlugDirty] = useState(false);
@@ -163,18 +173,19 @@ export function SettingsTab({
             Print / Save as PDF
           </button>
           <button
-            disabled
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-cv-border text-sm text-cv-text-dim cursor-not-allowed opacity-60"
+            onClick={() => exportAsHtml(currentSlug, isPublished)}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-cv-border text-sm text-cv-text hover:border-cv-accent hover:text-cv-accent transition-colors cursor-pointer"
           >
             <Code size={14} />
-            Export HTML (Coming soon)
+            View as HTML
           </button>
           <button
-            disabled
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-cv-border text-sm text-cv-text-dim cursor-not-allowed opacity-60"
+            onClick={() => profile && exportAsJson(profile)}
+            disabled={!profile}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border border-cv-border text-sm text-cv-text hover:border-cv-accent hover:text-cv-accent transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Share2 size={14} />
-            Export JSON (Coming soon)
+            <Download size={14} />
+            Export JSON
           </button>
         </div>
       </section>

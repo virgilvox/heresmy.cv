@@ -52,6 +52,41 @@ body {
     min-height: auto !important;
     overflow: visible !important;
   }
+
+  /* Preserve theme colors when printing */
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1.5cm;
+  }
+
+  /* Prevent breaking inside profile blocks */
+  .mb-12 {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Keep headings with their content */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* Hide fixed-position decorations */
+  .fixed, [style*="position: fixed"] {
+    display: none !important;
+  }
+
+  /* Full-width profile container for print */
+  .min-h-screen > div {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 }
 
 /* Tiptap editor styles */

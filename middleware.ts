@@ -22,7 +22,7 @@ export default convexAuthNextjsMiddleware(
       return nextjsMiddlewareRedirect(request, "/login");
     }
   },
-  { verbose: true },
+  { verbose: false },
 );
 
 export const config = {
