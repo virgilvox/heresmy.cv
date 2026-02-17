@@ -3,12 +3,14 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Github } from "lucide-react";
 
 export default function LoginPage() {
   const { signIn } = useAuthActions();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,6 +22,7 @@ export default function LoginPage() {
     setError("");
     try {
       await signIn("password", { email, password, flow: "signIn" });
+      router.push("/editor");
     } catch {
       setError("Invalid email or password");
     } finally {

@@ -1,4 +1,6 @@
-import DOMPurify from "isomorphic-dompurify";
+"use client";
+
+import DOMPurify from "dompurify";
 import type { BioBlockData } from "@/lib/blocks/types";
 
 export function BioBlock({ data }: { data: BioBlockData }) {
