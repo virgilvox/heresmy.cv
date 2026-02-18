@@ -7,7 +7,7 @@ export function SkillsBlock({ data }: { data: SkillsBlockData }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-12">
+    <div>
       {layout === "pills" && (
         <div className="flex flex-wrap gap-2">
           {items.map((skill, index) => (

@@ -6,7 +6,7 @@ export function HeaderBlock({ data }: { data: HeaderBlockData }) {
   const initials = (data.name || "?").charAt(0).toUpperCase();
 
   return (
-    <div className="mb-12">
+    <div>
       <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cv-accent to-orange-500 flex items-center justify-center mb-6 text-3xl font-bold text-cv-bg font-serif">
         {data.avatarUrl ? (
           <Image

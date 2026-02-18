@@ -8,13 +8,24 @@ export function ProjectsBlock({ data }: { data: ProjectsBlockData }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-12">
+    <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {items.map((project) => (
           <div
             key={project.id}
-            className="group bg-cv-surface border border-cv-border rounded-xl p-5 hover:border-cv-accent/40 transition-colors"
+            className="group bg-cv-surface border border-cv-border rounded-xl overflow-hidden hover:border-cv-accent/40 transition-colors"
           >
+            {project.imageUrl && (
+              <div className="w-full h-36 overflow-hidden">
+                <img
+                  src={project.imageUrl}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="p-5">
             {project.tag && (
               <span className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-cv-accent-glow text-cv-accent mb-3">
                 {project.tag}
@@ -41,6 +52,7 @@ export function ProjectsBlock({ data }: { data: ProjectsBlockData }) {
                 View project <ExternalLink size={11} />
               </a>
             )}
+            </div>
           </div>
         ))}
       </div>

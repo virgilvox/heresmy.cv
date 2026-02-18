@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { BlockRenderer } from "./block-renderer";
 import { blockRegistry } from "@/lib/blocks/registry";
 import type { Block } from "@/lib/blocks/types";
-import { GripVertical, Trash2, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import { GripVertical, Trash2, Eye, EyeOff, ChevronDown, ChevronRight, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SortableBlockProps {
@@ -14,6 +14,7 @@ interface SortableBlockProps {
   onSelect: () => void;
   onUpdate: (data: Record<string, unknown>) => void;
   onDelete: () => void;
+  onDuplicate: () => void;
   onToggleVisibility: () => void;
 }
 
@@ -23,6 +24,7 @@ export function SortableBlock({
   onSelect,
   onUpdate,
   onDelete,
+  onDuplicate,
   onToggleVisibility,
 }: SortableBlockProps) {
   const {
@@ -86,6 +88,16 @@ export function SortableBlock({
           }}
         >
           {block.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+        </button>
+        <button
+          aria-label="Duplicate block"
+          className="p-1.5 text-cv-text-dim hover:text-cv-accent transition-colors shrink-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate();
+          }}
+        >
+          <Copy size={14} />
         </button>
         <button
           aria-label="Delete block"

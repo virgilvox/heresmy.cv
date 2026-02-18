@@ -6,7 +6,7 @@ export function EducationBlock({ data }: { data: EducationBlockData }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-12">
+    <div>
       <div className="relative border-l-2 border-cv-border pl-6 space-y-8">
         {items.map((item, index) => {
           const isAccent = index === 0 || item.current;

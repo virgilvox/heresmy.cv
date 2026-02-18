@@ -28,6 +28,23 @@ export function getVideoThumbnail(url: string): string | null {
   const ytId = parseYouTubeId(url);
   if (ytId) return `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
 
-  // Vimeo thumbnails require an API call
+  // Vimeo thumbnails are fetched async — use getVimeoThumbnail instead
   return null;
+}
+
+/** Fetch Vimeo thumbnail via their oEmbed endpoint (no API key needed). */
+export async function getVimeoThumbnail(url: string): Promise<string | null> {
+  const vimeoId = parseVimeoId(url);
+  if (!vimeoId) return null;
+
+  try {
+    const res = await fetch(
+      `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${vimeoId}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.thumbnail_url || null;
+  } catch {
+    return null;
+  }
 }

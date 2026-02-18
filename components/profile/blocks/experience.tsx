@@ -17,59 +17,50 @@ export function ExperienceBlock({ data }: { data: ExperienceBlockData }) {
   const hiddenCount = items.length - INITIAL_COUNT;
 
   return (
-    <div className="mb-12">
-      <div className="relative border-l-2 border-cv-border pl-6 space-y-8">
-        {visibleItems.map((item, index) => {
-          const isAccent = index === 0 || item.current;
-
-          return (
-            <div key={item.id} className="relative">
-              {/* Timeline dot */}
-              <div
-                className={`absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full border-2 ${
-                  isAccent
-                    ? "bg-cv-accent border-cv-accent"
-                    : "bg-cv-bg border-cv-border"
-                }`}
-              />
-
-              <div>
-                <h3 className="text-sm font-semibold text-cv-text leading-snug">
+    <div>
+      <div className="space-y-4">
+        {visibleItems.map((item) => (
+          <div
+            key={item.id}
+            className="bg-cv-surface border border-cv-border rounded-lg p-5"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+              <div className="min-w-0">
+                {item.org && (
+                  <p className="text-sm font-semibold text-cv-accent">
+                    {item.org}
+                  </p>
+                )}
+                <h3 className="text-base font-bold text-cv-text leading-snug">
                   {item.role}
-                  {item.org && (
-                    <span className="font-normal text-cv-text-muted">
-                      {" "}
-                      at {item.org}
+                </h3>
+              </div>
+
+              {item.period && (
+                <p className="text-xs text-cv-text-dim shrink-0 sm:text-right">
+                  {item.period}
+                  {item.current && (
+                    <span className="ml-2 inline-block px-1.5 py-0.5 rounded text-[10px] bg-cv-accent-glow text-cv-accent font-medium">
+                      Current
                     </span>
                   )}
-                </h3>
-
-                {item.period && (
-                  <p className="text-xs text-cv-text-dim mt-1">
-                    {item.period}
-                    {item.current && (
-                      <span className="ml-2 inline-block px-1.5 py-0.5 rounded text-[10px] bg-cv-accent-glow text-cv-accent font-medium">
-                        Current
-                      </span>
-                    )}
-                  </p>
-                )}
-
-                {item.description && (
-                  <p className="text-sm text-cv-text-muted mt-2 leading-relaxed">
-                    {item.description}
-                  </p>
-                )}
-              </div>
+                </p>
+              )}
             </div>
-          );
-        })}
+
+            {item.description && (
+              <p className="text-sm text-cv-text-muted mt-3 leading-relaxed">
+                {item.description}
+              </p>
+            )}
+          </div>
+        ))}
       </div>
 
       {hasMore && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-6 flex items-center gap-1.5 text-xs font-medium text-cv-accent hover:text-cv-text transition-colors cursor-pointer group"
+          className="mt-4 flex items-center gap-1.5 text-xs font-medium text-cv-accent hover:text-cv-text transition-colors cursor-pointer group"
         >
           <ChevronDown
             size={14}

@@ -9,7 +9,7 @@ export function PublicationsBlock({ data }: { data: PublicationsBlockData }) {
   const hasMultipleCategories = categories.length > 1;
 
   return (
-    <div className="mb-12">
+    <div>
       {categories.map((category) => {
         if (category.items.length === 0) return null;
 

@@ -38,7 +38,7 @@ export function VideoBlock({ data }: { data: VideoBlockData }) {
     if (!embedUrl) return null;
 
     return (
-      <div className="mb-12">
+      <div>
         <div className="relative w-full rounded-lg overflow-hidden border border-cv-border bg-cv-surface aspect-video">
           <iframe
             src={embedUrl}
@@ -77,7 +77,7 @@ export function VideoBlock({ data }: { data: VideoBlockData }) {
   }
 
   return (
-    <div className="mb-12">
+    <div>
       {/* Category tabs */}
       {hasCategories && (
         <div className="flex flex-wrap gap-2 mb-4">

@@ -1,24 +1,35 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { nanoid } from "nanoid";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Play } from "lucide-react";
 import type { VideoBlockData, VideoItem } from "@/lib/blocks/types";
-import { getVideoThumbnail, getEmbedUrl } from "@/lib/video";
+import { getVideoThumbnail, getVimeoThumbnail, getEmbedUrl, parseVimeoId } from "@/lib/video";
 
 // ── Thumbnail preview sub-component ──────────────────────────────────────────
 
 function VideoPreview({ url }: { url: string }) {
   const thumbnail = useMemo(() => getVideoThumbnail(url), [url]);
   const embedUrl = useMemo(() => getEmbedUrl(url), [url]);
+  const isVimeo = useMemo(() => !!parseVimeoId(url), [url]);
+  const [vimeoThumb, setVimeoThumb] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isVimeo && !thumbnail) {
+      getVimeoThumbnail(url).then(setVimeoThumb);
+    } else {
+      setVimeoThumb(null);
+    }
+  }, [url, isVimeo, thumbnail]);
 
   if (!url.trim()) return null;
 
-  if (thumbnail) {
+  const thumb = thumbnail || vimeoThumb;
+  if (thumb) {
     return (
       <div className="mt-2 rounded-md overflow-hidden border border-cv-border">
         <img
-          src={thumbnail}
+          src={thumb}
           alt="Video thumbnail"
           className="w-full h-auto object-cover max-h-32"
         />
@@ -27,6 +38,14 @@ function VideoPreview({ url }: { url: string }) {
   }
 
   if (embedUrl) {
+    // Vimeo fallback: show styled placeholder while thumbnail loads
+    if (isVimeo) {
+      return (
+        <div className="mt-2 rounded-md overflow-hidden border border-cv-border bg-cv-bg flex items-center justify-center h-32">
+          <Play size={24} className="text-cv-text-dim" />
+        </div>
+      );
+    }
     return (
       <div className="mt-2 rounded-md overflow-hidden border border-cv-border">
         <iframe

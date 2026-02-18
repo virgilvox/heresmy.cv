@@ -1,4 +1,7 @@
+"use client";
+
 import type { Block } from "@/lib/blocks/types";
+import { cn } from "@/lib/utils";
 import { HeaderBlock } from "./blocks/header";
 import { BioBlock } from "./blocks/bio";
 import { IntroBlock } from "./blocks/intro";
@@ -56,16 +59,61 @@ function SectionHeader({ type }: { type: string }) {
   const Icon = meta.icon;
 
   return (
-    <div className="flex items-center gap-2 mb-5">
-      <Icon size={13} className="text-cv-accent" />
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-cv-accent">
+    <div className="flex items-center gap-2 mb-6" data-section-header>
+      <Icon size={18} className="text-cv-accent" />
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-cv-accent">
         {meta.label}
       </h2>
     </div>
   );
 }
 
-function renderBlock(block: Block) {
+// ── Band types ──────────────────────────────────────────────────────────────
+
+interface Band {
+  key: string;
+  blocks: Block[];
+  isHero: boolean;
+}
+
+/**
+ * Group visible blocks into "bands" — full-width sections with alternating
+ * backgrounds. Heading blocks get merged into the next band. Intro blocks
+ * are always standalone hero bands. Everything else gets its own band.
+ */
+function groupIntoBands(blocks: Block[]): Band[] {
+  const bands: Band[] = [];
+  let pendingHeading: Block | null = null;
+
+  for (const block of blocks) {
+    if (block.type === "intro") {
+      bands.push({ key: block.id, blocks: [block], isHero: true });
+    } else if (block.type === "heading") {
+      pendingHeading = block;
+    } else {
+      const bandBlocks = pendingHeading
+        ? [pendingHeading, block]
+        : [block];
+      pendingHeading = null;
+      bands.push({ key: block.id, blocks: bandBlocks, isHero: false });
+    }
+  }
+
+  // Trailing heading with no following block
+  if (pendingHeading) {
+    bands.push({
+      key: pendingHeading.id,
+      blocks: [pendingHeading],
+      isHero: false,
+    });
+  }
+
+  return bands;
+}
+
+// ── Block content renderer ──────────────────────────────────────────────────
+
+function renderBlockContent(block: Block) {
   switch (block.type) {
     case "header":
       return <HeaderBlock key={block.id} data={block.data} />;
@@ -77,84 +125,84 @@ function renderBlock(block: Block) {
       return <HeadingBlock key={block.id} data={block.data} />;
     case "experience":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="experience">
           <SectionHeader type="experience" />
           <ExperienceBlock data={block.data} />
         </div>
       );
     case "skills":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="skills">
           <SectionHeader type="skills" />
           <SkillsBlock data={block.data} />
         </div>
       );
     case "projects":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="projects">
           <SectionHeader type="projects" />
           <ProjectsBlock data={block.data} />
         </div>
       );
     case "publications":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="publications">
           <SectionHeader type="publications" />
           <PublicationsBlock data={block.data} />
         </div>
       );
     case "links":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="links">
           <SectionHeader type="links" />
           <LinksBlock data={block.data} />
         </div>
       );
     case "video":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="video">
           <SectionHeader type="video" />
           <VideoBlock data={block.data} />
         </div>
       );
     case "image":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="image">
           <SectionHeader type="image" />
           <ImageBlock data={block.data} />
         </div>
       );
     case "custom-html":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="custom-html">
           <SectionHeader type="custom-html" />
           <CustomHtmlBlock data={block.data} />
         </div>
       );
     case "education":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="education">
           <SectionHeader type="education" />
           <EducationBlock data={block.data} />
         </div>
       );
     case "testimonials":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="testimonials">
           <SectionHeader type="testimonials" />
           <TestimonialsBlock data={block.data} />
         </div>
       );
     case "stats":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="stats">
           <SectionHeader type="stats" />
           <StatsBlock data={block.data} />
         </div>
       );
     case "awards":
       return (
-        <div key={block.id}>
+        <div key={block.id} data-block-type="awards">
           <SectionHeader type="awards" />
           <AwardsBlock data={block.data} />
         </div>
@@ -164,14 +212,48 @@ function renderBlock(block: Block) {
   }
 }
 
+// ── Main renderer ───────────────────────────────────────────────────────────
+
 export function ProfileRenderer({ blocks }: { blocks: Block[] }) {
   const visibleBlocks = blocks.filter((b) => b.visible);
+  const bands = groupIntoBands(visibleBlocks);
+
+  // Track alternation index for non-hero bands only
+  let nonHeroIndex = 0;
 
   return (
-    <div className="max-w-[640px] mx-auto px-6 py-20">
-      {visibleBlocks.map((block) => renderBlock(block))}
+    <main role="main" aria-label="Profile">
+      {bands.map((band) => {
+        const isHero = band.isHero;
+        const isAlt = !isHero && nonHeroIndex % 2 === 1;
+        if (!isHero) nonHeroIndex++;
 
-      <footer className="text-center pt-10 border-t border-cv-border">
+        // Derive an aria-label from the primary block type
+        const primaryBlock = band.blocks.find((b) => b.type !== "heading") || band.blocks[0];
+        const meta = sectionMeta[primaryBlock.type];
+        const sectionLabel = meta?.label || primaryBlock.type;
+
+        return (
+          <section
+            key={band.key}
+            data-band={isHero ? "hero" : undefined}
+            aria-label={sectionLabel}
+            className={cn(
+              isHero
+                ? "bg-cv-bg py-14 md:py-20"
+                : isAlt
+                  ? "py-12 md:py-14 section-alt"
+                  : "bg-cv-bg py-12 md:py-14"
+            )}
+          >
+            <div className="max-w-5xl mx-auto px-6">
+              {band.blocks.map((block) => renderBlockContent(block))}
+            </div>
+          </section>
+        );
+      })}
+
+      <footer className="bg-cv-bg text-center py-10 border-t border-cv-border">
         <p className="text-xs text-cv-text-dim">
           Built with{" "}
           <a href="/" className="text-cv-accent hover:underline">
@@ -179,6 +261,6 @@ export function ProfileRenderer({ blocks }: { blocks: Block[] }) {
           </a>
         </p>
       </footer>
-    </div>
+    </main>
   );
 }

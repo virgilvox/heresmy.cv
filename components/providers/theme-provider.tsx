@@ -3,6 +3,14 @@
 import { ReactNode, useMemo } from "react";
 import { getTheme } from "@/lib/themes/registry";
 
+function sanitizeFontFamily(font: string): string {
+  // Strip anything that isn't alphanumeric, spaces, commas, quotes, or hyphens
+  const cleaned = font.replace(/[^a-zA-Z0-9 ,'\-]/g, "");
+  // Block CSS injection keywords
+  if (/(?:expression|javascript|url)/i.test(cleaned)) return "";
+  return cleaned;
+}
+
 interface ThemeProviderProps {
   themeId: string;
   customizations?: {
@@ -49,7 +57,9 @@ export function ThemeProvider({ themeId, customizations, children }: ThemeProvid
         <style dangerouslySetInnerHTML={{ __html: theme.customCSS }} />
       )}
       <div style={{
-        fontFamily: customizations?.fontFamily || theme.fonts.body,
+        fontFamily: customizations?.fontFamily
+          ? sanitizeFontFamily(customizations.fontFamily)
+          : theme.fonts.body,
       }}>
         {children}
       </div>

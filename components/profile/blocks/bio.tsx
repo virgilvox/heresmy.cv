@@ -7,7 +7,7 @@ export function BioBlock({ data }: { data: BioBlockData }) {
   if (!data.content) return null;
 
   return (
-    <div className="mb-12">
+    <div>
       <div
         className="text-base leading-relaxed text-cv-text prose-a:text-cv-accent"
         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data.content) }}

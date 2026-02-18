@@ -26,7 +26,7 @@ export function LinksBlock({ data }: { data: LinksBlockData }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-12">
+    <div>
       <div className="flex flex-wrap gap-2.5">
         {items.map((item) => {
           const Icon = iconMap[item.icon] || Globe;

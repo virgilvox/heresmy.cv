@@ -6,7 +6,7 @@ export function TestimonialsBlock({ data }: { data: TestimonialsBlockData }) {
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-12 space-y-6">
+    <div className="space-y-6">
       {items.map((item) => (
         <blockquote
           key={item.id}

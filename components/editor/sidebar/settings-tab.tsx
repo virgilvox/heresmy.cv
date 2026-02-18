@@ -103,6 +103,7 @@ export function SettingsTab({
               className="flex-1 bg-transparent px-3 py-2 text-sm text-cv-text outline-none min-w-0"
               placeholder="your-name"
               maxLength={30}
+              aria-label="Page URL slug"
             />
             {/* Status indicator */}
             <div className="pr-3 shrink-0">
@@ -143,19 +144,31 @@ export function SettingsTab({
           SEO
         </p>
         <div className="space-y-3">
-          <Input
-            label="Page title"
-            value={seoTitle || ""}
-            onChange={(e) => onUpdateSeo({ seoTitle: e.target.value })}
-            placeholder="Your Name — CV"
-          />
-          <Textarea
-            label="Meta description"
-            value={seoDescription || ""}
-            onChange={(e) => onUpdateSeo({ seoDescription: e.target.value })}
-            placeholder="A brief description for search engines..."
-            rows={3}
-          />
+          <div>
+            <Input
+              label="Page title"
+              value={seoTitle || ""}
+              onChange={(e) => onUpdateSeo({ seoTitle: e.target.value })}
+              placeholder="Your Name — CV"
+              maxLength={70}
+            />
+            <p className={`text-[10px] mt-1 px-1 ${(seoTitle?.length || 0) > 60 ? "text-red-400" : "text-cv-text-dim"}`}>
+              {seoTitle?.length || 0}/70
+            </p>
+          </div>
+          <div>
+            <Textarea
+              label="Meta description"
+              value={seoDescription || ""}
+              onChange={(e) => onUpdateSeo({ seoDescription: e.target.value })}
+              placeholder="A brief description for search engines..."
+              rows={3}
+              maxLength={160}
+            />
+            <p className={`text-[10px] mt-1 px-1 ${(seoDescription?.length || 0) > 140 ? "text-red-400" : "text-cv-text-dim"}`}>
+              {seoDescription?.length || 0}/160
+            </p>
+          </div>
         </div>
       </section>
 

@@ -8,7 +8,7 @@ export function CustomHtmlBlock({ data }: { data: CustomHtmlBlockData }) {
   const height = data.height || 200;
 
   return (
-    <div className="mb-12">
+    <div>
       <div className="rounded-lg overflow-hidden border border-cv-border bg-cv-surface">
         <iframe
           srcDoc={data.html}

@@ -5,7 +5,7 @@ export function ImageBlock({ data }: { data: ImageBlockData }) {
   if (!data.url) return null;
 
   return (
-    <div className="mb-12">
+    <div>
       <figure>
         <div className="rounded-lg overflow-hidden border border-cv-border bg-cv-surface">
           <Image

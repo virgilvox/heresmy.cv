@@ -95,6 +95,13 @@ export function ProjectsBlockEditor({ data, onUpdate }: Props) {
               )}
             </div>
           </div>
+
+          <input
+            value={item.imageUrl}
+            onChange={(e) => updateItem(item.id, { imageUrl: e.target.value })}
+            placeholder="Image URL (optional)"
+            className="w-full bg-transparent border border-cv-border rounded-md px-3 py-2 text-sm text-cv-text placeholder:text-cv-text-dim outline-none focus:border-cv-accent transition-colors"
+          />
         </div>
       ))}
 

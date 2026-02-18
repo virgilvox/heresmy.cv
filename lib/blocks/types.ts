@@ -373,3 +373,32 @@ export function createBlock<T extends BlockType>(type: T): Extract<Block, { type
     data: structuredClone(defaultDataMap[type]),
   } as Extract<Block, { type: T }>;
 }
+
+/** Deep-clone a block, assigning fresh IDs to the block and all nested items. */
+export function duplicateBlock(block: Block): Block {
+  const cloned = structuredClone(block);
+  cloned.id = nanoid();
+
+  // Re-ID any nested items/categories that have `id` fields
+  const data = cloned.data as Record<string, unknown>;
+  if (Array.isArray(data.items)) {
+    data.items = data.items.map((item: Record<string, unknown>) => ({
+      ...item,
+      id: nanoid(),
+    }));
+  }
+  if (Array.isArray(data.categories)) {
+    data.categories = data.categories.map((cat: Record<string, unknown>) => ({
+      ...cat,
+      id: nanoid(),
+      items: Array.isArray(cat.items)
+        ? (cat.items as Record<string, unknown>[]).map((item) => ({
+            ...item,
+            id: nanoid(),
+          }))
+        : cat.items,
+    }));
+  }
+
+  return cloned;
+}

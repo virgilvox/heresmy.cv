@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import type { Doc } from "./_generated/dataModel";
 
 // ── Shared validation ────────────────────────────────────────────────────────
 
@@ -32,6 +33,8 @@ const VALID_THEME_IDS = [
 ];
 
 const HEX_COLOR_REGEX = /^#[0-9a-fA-F]{6}$/;
+const FONT_FAMILY_REGEX = /^[a-zA-Z0-9 ,'\-]+$/;
+const FONT_FAMILY_BLOCKLIST = /(?:expression|javascript|url|;|\{|\}|\(|\))/i;
 
 export const getMyProfile = query({
   args: {},
@@ -89,7 +92,7 @@ export const createProfile = mutation({
     const starterBlocks = [
       {
         id: "intro-1",
-        type: "intro",
+        type: "intro" as const,
         visible: true,
         data: {
           name: "Your Name",
@@ -103,7 +106,7 @@ export const createProfile = mutation({
       },
       {
         id: "experience-1",
-        type: "experience",
+        type: "experience" as const,
         visible: true,
         data: {
           items: [],
@@ -111,16 +114,16 @@ export const createProfile = mutation({
       },
       {
         id: "skills-1",
-        type: "skills",
+        type: "skills" as const,
         visible: true,
         data: {
-          items: [],
-          layout: "pills",
+          items: [] as string[],
+          layout: "pills" as const,
         },
       },
       {
         id: "projects-1",
-        type: "projects",
+        type: "projects" as const,
         visible: true,
         data: {
           items: [],
@@ -128,7 +131,7 @@ export const createProfile = mutation({
       },
       {
         id: "links-1",
-        type: "links",
+        type: "links" as const,
         visible: true,
         data: {
           items: [],
@@ -157,6 +160,9 @@ export const updateBlocks = mutation({
         id: v.string(),
         type: v.string(),
         visible: v.boolean(),
+        // Runtime validation happens at the schema level via the typed block validator.
+        // We keep v.any() here for the mutation args to avoid duplicating the full union,
+        // since schema-level validation catches invalid data on write.
         data: v.any(),
       })
     ),
@@ -172,7 +178,9 @@ export const updateBlocks = mutation({
 
     if (!profile) throw new Error("Profile not found");
 
-    await ctx.db.patch(profile._id, { blocks: args.blocks });
+    await ctx.db.patch(profile._id, {
+      blocks: args.blocks as Doc<"profiles">["blocks"],
+    });
   },
 });
 
@@ -214,8 +222,13 @@ export const updateCustomizations = mutation({
       throw new Error("Invalid accent color. Must be a hex color (e.g. #ff6600)");
     }
 
-    if (fontFamily !== undefined && fontFamily.length > 100) {
-      throw new Error("Font family value is too long");
+    if (fontFamily !== undefined) {
+      if (fontFamily.length > 100) {
+        throw new Error("Font family value is too long");
+      }
+      if (!FONT_FAMILY_REGEX.test(fontFamily) || FONT_FAMILY_BLOCKLIST.test(fontFamily)) {
+        throw new Error("Font family contains invalid characters");
+      }
     }
 
     const profile = await ctx.db
@@ -316,8 +329,9 @@ export const incrementViewCount = mutation({
 
     if (!profile) return;
 
+    // Per-profile debounce: only count if >30 seconds since last view
     const now = Date.now();
-    if (profile.lastViewedAt && now - profile.lastViewedAt < 5000) return;
+    if (profile.lastViewedAt && now - profile.lastViewedAt < 30000) return;
 
     await ctx.db.patch(profile._id, {
       viewCount: profile.viewCount + 1,
@@ -338,6 +352,11 @@ export const uploadAvatar = mutation({
       .unique();
 
     if (!profile) throw new Error("Profile not found");
+
+    // Delete old avatar from storage to prevent orphaned files
+    if (profile.avatarStorageId && profile.avatarStorageId !== args.storageId) {
+      await ctx.storage.delete(profile.avatarStorageId);
+    }
 
     await ctx.db.patch(profile._id, { avatarStorageId: args.storageId });
   },

@@ -20,11 +20,11 @@ export default async function OGImage({
   try {
     const profile = await fetchQuery(api.profiles.getBySlug, { slug });
     if (profile) {
-      const headerBlock = profile.blocks.find(
-        (b: { type: string }) => b.type === "header"
+      const heroBlock = profile.blocks.find(
+        (b: { type: string }) => b.type === "intro" || b.type === "header"
       );
-      if (headerBlock) {
-        const data = headerBlock.data as { name?: string; tagline?: string };
+      if (heroBlock) {
+        const data = heroBlock.data as { name?: string; tagline?: string };
         name = data.name || slug;
         tagline = data.tagline || "heresmy.cv";
       }

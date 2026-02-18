@@ -19,9 +19,9 @@ const exampleBlocks: Block[] = [
         "Hardware hacker, new media artist, and dropout. Making things that blink, move, and occasionally require a fire extinguisher.",
       location: "Mesa, AZ",
       avatarUrl: "",
-      bio: '<p>I work at the intersection of embedded systems, creative coding, and projection mapping. I write tutorials, build tools, and host workshops.</p><p>Former board member at <strong>HeatSync Labs</strong> -- one of the longest-running hackerspaces in the Southwest. I believe in do-ocracy and showing up.</p>',
-      quote: "The best way to predict the future is to build it.",
-      quoteAttribution: "Alan Kay",
+      bio: '<p>Developer advocate and technical content creator with over 10 years of experience bridging hardware and software communities. Specializing in embedded systems, IoT, and creative technology.</p><p>My work spans from building open-source robotics platforms to creating browser-based creative tools. I develop tutorials, documentation, and educational content that makes complex technical concepts accessible. Focus areas include MQTT/IoT protocols, projection mapping, cellular connectivity, and interactive web experiences.</p><p>Former board member at <strong>HeatSync Labs</strong>, one of the longest-running hackerspaces in the Southwest. Co-founder of <strong>South West Maker Festival</strong>. Previously held developer advocacy roles at AWS, SignalWire, SORACOM, EMQ, and others. Studied at <strong>ASU Arts Media &amp; Engineering</strong> (2009-2014).</p>',
+      quote: "Technology should be accessible. When the existing tools are too expensive or complex, there's an opportunity to build something better for the community.",
+      quoteAttribution: "On open-source philosophy",
     },
   },
   {

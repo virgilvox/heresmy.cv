@@ -3,21 +3,39 @@
 import { useEffect, useState } from "react";
 import { Printer } from "lucide-react";
 
+function waitForImages(): Promise<void> {
+  const images = Array.from(document.querySelectorAll("img"));
+  if (images.length === 0) return Promise.resolve();
+
+  return Promise.all(
+    images.map(
+      (img) =>
+        img.complete
+          ? Promise.resolve()
+          : new Promise<void>((resolve) => {
+              img.addEventListener("load", () => resolve(), { once: true });
+              img.addEventListener("error", () => resolve(), { once: true });
+            })
+    )
+  ).then(() => {});
+}
+
 export function PrintTrigger() {
   const [autoPrinted, setAutoPrinted] = useState(false);
 
   useEffect(() => {
-    // Try auto-print after fonts load; if blocked, the button is the fallback
     const trigger = async () => {
       try {
         await document.fonts.ready;
       } catch {
         // ignore
       }
-      setTimeout(() => {
+      await waitForImages();
+      // One more frame to ensure layout is settled
+      requestAnimationFrame(() => {
         window.print();
         setAutoPrinted(true);
-      }, 800);
+      });
     };
     trigger();
   }, []);

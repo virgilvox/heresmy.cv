@@ -8,14 +8,14 @@ export function StatsBlock({ data }: { data: StatsBlockData }) {
 
   if (layout === "grid") {
     return (
-      <div className="mb-12">
+      <div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {items.map((item) => (
             <div
               key={item.id}
-              className="bg-cv-surface border border-cv-border rounded-lg p-4 text-center"
+              className="bg-cv-surface border border-cv-border rounded-lg p-6 text-center"
             >
-              <div className="text-3xl font-bold text-cv-accent">
+              <div className="text-4xl md:text-5xl font-bold text-cv-accent">
                 {item.value}
               </div>
               <div className="text-xs text-cv-text-muted mt-1">
@@ -29,11 +29,14 @@ export function StatsBlock({ data }: { data: StatsBlockData }) {
   }
 
   return (
-    <div className="mb-12">
-      <div className="flex flex-wrap justify-center gap-8">
+    <div>
+      <div className="flex flex-wrap justify-center gap-6">
         {items.map((item) => (
-          <div key={item.id} className="text-center">
-            <div className="text-3xl font-bold text-cv-accent">
+          <div
+            key={item.id}
+            className="border border-cv-border rounded-lg p-6 text-center min-w-[120px]"
+          >
+            <div className="text-4xl md:text-5xl font-bold text-cv-accent">
               {item.value}
             </div>
             <div className="text-xs text-cv-text-muted mt-1">

@@ -7,7 +7,7 @@ import { BlockCanvas } from "@/components/editor/block-canvas";
 import { Sidebar } from "@/components/editor/sidebar/sidebar";
 import { AddBlockMenu } from "@/components/editor/add-block-menu";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { createBlock } from "@/lib/blocks/types";
+import { createBlock, duplicateBlock } from "@/lib/blocks/types";
 import type { Block, BlockType } from "@/lib/blocks/types";
 import { useDebouncedCallback } from "use-debounce";
 import { useAuthActions } from "@convex-dev/auth/react";
@@ -48,6 +48,7 @@ export default function EditorPage() {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isDirtyRef = useRef(false);
 
   // Sync blocks from server on load
   useEffect(() => {
@@ -56,6 +57,17 @@ export default function EditorPage() {
       setInitialized(true);
     }
   }, [profile, initialized]);
+
+  // Warn on unsaved changes when navigating away
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirtyRef.current) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   // Create profile if none exists (retry with new slug on collision)
   useEffect(() => {
@@ -83,6 +95,7 @@ export default function EditorPage() {
         setSaveStatus("saving");
         try {
           await updateBlocks({ blocks: newBlocks });
+          isDirtyRef.current = false;
           setSaveStatus("saved");
           if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
           saveTimeoutRef.current = setTimeout(() => setSaveStatus("idle"), 2000);
@@ -97,6 +110,7 @@ export default function EditorPage() {
   const handleBlocksChange = useCallback(
     (newBlocks: Block[]) => {
       setBlocks(newBlocks);
+      isDirtyRef.current = true;
       debouncedSaveBlocks(newBlocks);
     },
     [debouncedSaveBlocks]
@@ -121,6 +135,19 @@ export default function EditorPage() {
       }
     },
     [blocks, activeBlockId, handleBlocksChange]
+  );
+
+  const handleDuplicateBlock = useCallback(
+    (blockId: string) => {
+      const idx = blocks.findIndex((b) => b.id === blockId);
+      if (idx === -1) return;
+      const cloned = duplicateBlock(blocks[idx]);
+      const newBlocks = [...blocks];
+      newBlocks.splice(idx + 1, 0, cloned);
+      handleBlocksChange(newBlocks);
+      setActiveBlockId(cloned.id);
+    },
+    [blocks, handleBlocksChange]
   );
 
   const handleUpdateBlock = useCallback(
@@ -318,6 +345,7 @@ export default function EditorPage() {
                 onSelectBlock={handleToggleBlock}
                 onUpdateBlock={handleUpdateBlock}
                 onDeleteBlock={handleDeleteBlock}
+                onDuplicateBlock={handleDuplicateBlock}
                 onToggleVisibility={handleToggleVisibility}
               />
               <AddBlockMenu onAdd={handleAddBlock} />
@@ -342,8 +370,8 @@ export default function EditorPage() {
 
           {/* Sidebar — mobile overlay */}
           {showMobileSidebar && (
-            <div className="md:hidden fixed inset-0 top-13 z-40 bg-cv-bg/80 backdrop-blur-sm">
-              <div className="absolute right-0 top-0 bottom-0 w-72 bg-cv-surface border-l border-cv-border flex flex-col">
+            <div className="md:hidden fixed inset-0 top-13 z-40 bg-cv-bg/80 backdrop-blur-sm" onClick={() => setShowMobileSidebar(false)}>
+              <div className="absolute right-0 top-0 bottom-0 w-72 bg-cv-surface border-l border-cv-border flex flex-col" onClick={(e) => e.stopPropagation()}>
                 <Sidebar
                   tab={sidebarTab}
                   onTabChange={setSidebarTab}
