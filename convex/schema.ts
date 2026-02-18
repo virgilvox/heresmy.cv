@@ -197,6 +197,12 @@ const schema = defineSchema({
     blocks: v.array(blockValidator),
     avatarStorageId: v.optional(v.id("_storage")),
     isPublished: v.boolean(),
+    publishedBlocks: v.optional(v.array(blockValidator)),
+    publishedThemeId: v.optional(v.string()),
+    publishedCustomizations: v.optional(v.object({
+      accentColor: v.optional(v.string()),
+      fontFamily: v.optional(v.string()),
+    })),
     viewCount: v.number(),
     lastViewedAt: v.optional(v.number()),
     seoTitle: v.optional(v.string()),

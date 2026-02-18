@@ -61,7 +61,13 @@ export const getBySlug = query({
 
     if (!profile || !profile.isPublished) return null;
 
-    return profile;
+    // Serve published snapshot (fallback to live data for backwards compat)
+    return {
+      ...profile,
+      blocks: profile.publishedBlocks ?? profile.blocks,
+      themeId: profile.publishedThemeId ?? profile.themeId,
+      customizations: profile.publishedCustomizations ?? profile.customizations,
+    };
   },
 });
 
@@ -315,7 +321,18 @@ export const publish = mutation({
 
     if (!profile) throw new Error("Profile not found");
 
-    await ctx.db.patch(profile._id, { isPublished: args.isPublished });
+    if (args.isPublished) {
+      // Snapshot current data into published fields
+      await ctx.db.patch(profile._id, {
+        isPublished: true,
+        publishedBlocks: profile.blocks,
+        publishedThemeId: profile.themeId,
+        publishedCustomizations: profile.customizations,
+      });
+    } else {
+      // Unpublish but keep snapshots for change detection
+      await ctx.db.patch(profile._id, { isPublished: false });
+    }
   },
 });
 
