@@ -16,7 +16,7 @@ const exampleBlocks: Block[] = [
     data: {
       name: "Moheeb Zara",
       tagline:
-        "Hardware hacker, new media artist, and dropout. Making things that blink, move, and occasionally require a fire extinguisher.",
+        "Hardware hacker and new media artist. Making things that blink, move, and occasionally require a fire extinguisher.",
       location: "Mesa, AZ",
       avatarUrl: "",
       bio: '<p>Developer advocate and technical content creator with over 10 years of experience bridging hardware and software communities. Specializing in embedded systems, IoT, and creative technology.</p><p>My work spans from building open-source robotics platforms to creating browser-based creative tools. I develop tutorials, documentation, and educational content that makes complex technical concepts accessible. Focus areas include MQTT/IoT protocols, projection mapping, cellular connectivity, and interactive web experiences.</p><p>Former board member at <strong>HeatSync Labs</strong>, one of the longest-running hackerspaces in the Southwest. Co-founder of <strong>South West Maker Festival</strong>. Previously held developer advocacy roles at AWS, SignalWire, SORACOM, EMQ, and others. Studied at <strong>ASU Arts Media &amp; Engineering</strong> (2009-2014).</p>',
@@ -204,8 +204,7 @@ const exampleBlocks: Block[] = [
     data: {
       items: [
         { id: "stat-1", value: "41+", label: "Hackster Projects" },
-        { id: "stat-2", value: "5+", label: "Years Dev Advocacy" },
-        { id: "stat-3", value: "100+", label: "Workshops Hosted" },
+        { id: "stat-2", value: "10+", label: "Years Dev Advocacy" },
       ],
       layout: "row",
     },
